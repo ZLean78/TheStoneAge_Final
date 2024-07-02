@@ -62,8 +62,8 @@ onready var control
 func _ready():
 	tree=Globals.current_scene
 	nav2d=tree.get_node("nav")
-	connect("was_selected",tree,"_select_unit")
-	connect("was_deselected",tree,"_deselect_unit")
+	#connect("was_selected",tree,"_select_unit")
+	#connect("was_deselected",tree,"_deselect_unit")
 	emit_signal("health_change",health)
 	
 	tree=Globals.current_scene

@@ -57,8 +57,8 @@ func _ready():
 	foot=$Selected
 	tree=Globals.current_scene
 	nav2d=tree.get_node("nav")
-	connect("was_selected",tree,"_select_unit",[self])
-	connect("was_deselected",tree,"_deselect_unit",[self])
+#	connect("was_selected",tree,"_select_unit",[self])
+#	connect("was_deselected",tree,"_deselect_unit",[self])
 	
 
 func _physics_process(delta):
