@@ -1,0 +1,57 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Scenes/Mammoth/MammothSmall.png" type="Texture" id=1]
+[ext_resource path="res://Scenes/Mammoth/mammoth.gd" type="Script" id=2]
+
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 1, 0, 0, 1 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 126, 62 )
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 184.272
+
+[sub_resource type="CircleShape2D" id=4]
+radius = 740.945
+
+[node name="Mammoth" type="KinematicBody2D"]
+scale = Vector2( 0.5, 0.5 )
+collision_mask = 14
+input_pickable = true
+script = ExtResource( 2 )
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+margin_left = -30.0
+margin_top = -100.0
+margin_right = 28.0
+margin_bottom = -86.0
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_styles/fg = SubResource( 3 )
+max_value = 120.0
+
+[node name="Scalable" type="Node2D" parent="."]
+
+[node name="Sprite" type="Sprite" parent="Scalable"]
+texture = ExtResource( 1 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource( 5 )
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_mask = 14
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource( 2 )
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_mask = 14
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource( 4 )
+
+[connection signal="mouse_entered" from="." to="." method="_on_Mammoth_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_Mammoth_mouse_exited"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_Area2D_body_exited"]
+[connection signal="body_entered" from="DetectionArea" to="." method="_on_DetectionArea_body_entered"]

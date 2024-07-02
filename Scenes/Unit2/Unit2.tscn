@@ -1,0 +1,124 @@
+[gd_scene load_steps=17 format=2]
+
+[ext_resource path="res://Scenes/Bar/Bar.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/Unit2/Unit2.gd" type="Script" id=2]
+[ext_resource path="res://Scenes/Unit/UnitFrames.tres" type="SpriteFrames" id=3]
+[ext_resource path="res://Scenes/Unit/selected.png" type="Texture" id=4]
+[ext_resource path="res://Scenes/Unit/bag_1.png" type="Texture" id=5]
+[ext_resource path="res://Scenes/Unit/bag_3.png" type="Texture" id=6]
+[ext_resource path="res://Scenes/Unit/bag_2.png" type="Texture" id=7]
+[ext_resource path="res://Scenes/Warrior/WarriorMark.png" type="Texture" id=8]
+[ext_resource path="res://Scenes/Unit2/Animation.gd" type="Script" id=9]
+[ext_resource path="res://Scenes/Unit2/Control.gd" type="Script" id=10]
+
+[sub_resource type="CanvasItemMaterial" id=7]
+
+[sub_resource type="Shader" id=5]
+code = "shader_type canvas_item;
+render_mode blend_mix;
+
+void fragment(){
+	vec4 current_color = texture(TEXTURE,UV);
+	
+	COLOR=vec4(1.0,0.3,0.0,current_color.a);
+}"
+
+[sub_resource type="ShaderMaterial" id=6]
+shader = SubResource( 5 )
+
+[sub_resource type="SpriteFrames" id=3]
+animations = [ {
+"frames": [ ExtResource( 5 ) ],
+"loop": true,
+"name": "bag_1",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 7 ) ],
+"loop": true,
+"name": "bag_2",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 6 ) ],
+"loop": true,
+"name": "bag_3",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 5 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
+
+[sub_resource type="RectangleShape2D" id=8]
+extents = Vector2( 7.5, 13 )
+
+[sub_resource type="CircleShape2D" id=4]
+radius = 31.6938
+
+[node name="Unit2" type="KinematicBody2D" groups=["units"]]
+collision_layer = 2
+collision_mask = 11
+input_pickable = true
+script = ExtResource( 2 )
+MAX_ENERGY_LOSS = 15.0
+MIN_ENERGY_LOSS = 10.0
+
+[node name="Selected" type="Sprite" parent="."]
+visible = false
+material = SubResource( 7 )
+position = Vector2( 0, 11 )
+scale = Vector2( 0.63281, 0.49219 )
+texture = ExtResource( 4 )
+
+[node name="WarchiefMark" type="Sprite" parent="."]
+visible = false
+material = SubResource( 6 )
+position = Vector2( 1, -18 )
+scale = Vector2( 0.63281, 0.49219 )
+texture = ExtResource( 8 )
+
+[node name="Bar" parent="." instance=ExtResource( 1 )]
+position = Vector2( -7, -19 )
+
+[node name="shootNode" type="Node2D" parent="."]
+
+[node name="shootPoint" type="Position2D" parent="shootNode"]
+position = Vector2( 12, 0 )
+
+[node name="scalable" type="Node2D" parent="."]
+
+[node name="sprite" type="AnimatedSprite" parent="scalable"]
+position = Vector2( 0, -1 )
+scale = Vector2( 1.58333, 1.25 )
+frames = ExtResource( 3 )
+animation = "male_idle3_d"
+
+[node name="bag_sprite" type="AnimatedSprite" parent="scalable" groups=["bag_sprite"]]
+frames = SubResource( 3 )
+animation = "bag_1"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0.5, 0 )
+shape = SubResource( 8 )
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 0.5, -1.5 )
+shape = SubResource( 4 )
+
+[node name="all_timer" type="Timer" parent="."]
+autostart = true
+
+[node name="Animation" type="Node2D" parent="."]
+script = ExtResource( 9 )
+
+[node name="Control" type="Node2D" parent="."]
+script = ExtResource( 10 )
+
+[connection signal="input_event" from="." to="." method="_on_Unit_input_event"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_Area2D_body_exited"]
+[connection signal="timeout" from="all_timer" to="." method="_on_all_timer_timeout"]

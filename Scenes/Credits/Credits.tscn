@@ -1,0 +1,133 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Scenes/Intermissions/Background.png" type="Texture" id=1]
+[ext_resource path="res://Scenes/Credits/Credits.gd" type="Script" id=2]
+[ext_resource path="res://Fonts/BASKVILL.TTF" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 40
+font_data = ExtResource( 3 )
+
+[sub_resource type="Animation" id=3]
+resource_name = "Billboard"
+length = 60.0
+step = 0.01
+tracks/0/type = "value"
+tracks/0/path = NodePath("Narrative:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( -0.05, 59.99 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 200, 1000 ), Vector2( 200, -3300 ) ]
+}
+
+[sub_resource type="Animation" id=4]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Narrative:rect_position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 70, 774 ) ]
+}
+
+[node name="Credits" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="Background" type="Sprite" parent="."]
+position = Vector2( 782, 485.5 )
+scale = Vector2( 1.945, 1.61833 )
+texture = ExtResource( 1 )
+
+[node name="Narrative" type="Label" parent="."]
+margin_left = 70.0
+margin_top = 774.0
+margin_right = 1007.0
+margin_bottom = 4297.0
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "The Stone Age
+(La Edad de Piedra)
+
+Desarrollado para:
+
+Programación de Videojuegos III
+Tecnicatura en Diseño
+ y Programación de Videojuegos
+Universidad Nacional del Litoral
+Facultad de Ingeniería y Ciencias Hídricas
+(UNL-FICH)
+
+Docente: Emanuel Oscar Nicolás Segretin
+
+Alumno: Leandro Zárate
+
+
+Software Uitilizado Para Arte y Música:
+
+⦁	[Audacity], en audacityteam.org. Recuperado el 24/06/2024, de:
+https://www.audacityteam.org/
+
+⦁	[Beepbox], en beepbox.co. Recuperado el 24/06/2024, de:
+https://www.beepbox.co
+
+⦁	[paint.net], en getpaint.net. Recuperado el 24/06/2024, de:
+https://www.getpaint.net/
+
+Material de Terceros:
+
+⦁	[devurandom] (11/09/2013) db16 Rpg Character Sprites (V2), en OpenGameArt.Org.
+Recuperado el 24/06/2024 de:
+
+https://opengameart.org/content/db16-rpg-character-sprites-v2
+Licencias: (CC-BY-3.0), (CC-BY-SA-3.0), (GPL 3.0), (GPL 2.0), (CC-0)
+
+⦁	[Kenney] (8/10/2016) Medieval RTS, en Kenney.NL.
+Recuperado el 24/06/2024 de:
+https://kenney.nl/assets/medieval-rts
+Licencia: (CC0)
+
+⦁	[Ylmir] (28/03/2016) Rain (Loopable), en OpenGameArt.Org.
+Recuperado el 24/06/2024 de:
+https://opengameart.org/content/rain-loopable
+Licencia: (CC0)
+
+Referencias Bibliográficas:
+
+⦁	[Arcane Energy] (07/10/2021). Volume Slider / Audiobus (Godot3) [Video].
+Youtube. https://www.youtube.com/watch?v=4kL7t5BDU7U
+
+⦁	[Game Development Center] (10/04/2020). Godot Navigation / Substracting Collision Shapes From Navigation Polygons [Video].
+⦁	Youtube. https://www.youtube.com/watch?v=uzqRjEoBcTI
+
+[LegionGames] (19/02/2021). Godot RTS Tutorial Episode 1: Unit Selection and Movement [Video].
+Youtube. https://www.youtube.com/watch?v=JXvNOnmBgRg
+
+⦁	Linietsky, J, Manzur, A and the Godot Community (2014). Using Navigation Meshes, en Godot Engine 4.2 Documentarion in English. godotengine.org. Recuperado el 24/06/2024 de:
+https://docs.godotengine.org/en/stable/tutorials/navigation/navigation_using_navigationmeshes.html
+Licencia: (CC BY 3.0)
+
+
+
+
+
+
+"
+align = 1
+autowrap = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+playback_speed = 0.3
+anims/Billboard = SubResource( 3 )
+anims/RESET = SubResource( 4 )
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]

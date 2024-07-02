@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Scenes/MouseIcons/barn.png" type="Texture" id=1]
+[ext_resource path="res://Scenes/Barn/Barn.gd" type="Script" id=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 1, 1 )
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 57.0351
+
+[node name="Barn" type="StaticBody2D" groups=["Barn"]]
+collision_layer = 8
+collision_mask = 11
+script = ExtResource( 2 )
+condition_max = 65
+
+[node name="Sprite" type="Sprite" parent="."]
+scale = Vector2( 0.2, 0.2 )
+texture = ExtResource( 1 )
+
+[node name="Bar" type="ProgressBar" parent="."]
+margin_left = -24.0
+margin_top = -36.0
+margin_right = 27.0
+margin_bottom = -20.0
+rect_scale = Vector2( 0.880001, 0.68 )
+custom_styles/fg = SubResource( 1 )
+max_value = 65.0
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource( 2 )
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+scale = Vector2( 0.68, 0.72 )
+polygon = PoolVector2Array( -63.2353, 33.3333, -44, -2, -32, -11, 33.8235, -45.8333, 61.7647, -45.8333, 63.2353, 45.8333, -11, 48 )
+
+[connection signal="mouse_entered" from="." to="." method="_on_Barn_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_Barn_mouse_exited"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_Area2D_body_exited"]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

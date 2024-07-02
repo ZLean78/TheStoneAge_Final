@@ -1,0 +1,94 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://Scenes/Vehicle/vehicle3.png" type="Texture" id=1]
+[ext_resource path="res://Scenes/Vehicle/vehicle1.png" type="Texture" id=2]
+[ext_resource path="res://Scenes/Vehicle/vehicle2.png" type="Texture" id=3]
+[ext_resource path="res://Scenes/Vehicle/Control.gd" type="Script" id=4]
+[ext_resource path="res://Scenes/Unit/selected.png" type="Texture" id=5]
+[ext_resource path="res://Scenes/Vehicle/vehicle4.png" type="Texture" id=6]
+[ext_resource path="res://Scenes/Vehicle/Vehicle.gd" type="Script" id=7]
+[ext_resource path="res://Scenes/Vehicle/Animation.gd" type="Script" id=8]
+
+[sub_resource type="StyleBoxFlat" id=10]
+bg_color = Color( 0, 0, 1, 1 )
+
+[sub_resource type="SpriteFrames" id=8]
+animations = [ {
+"frames": [ ExtResource( 2 ) ],
+"loop": false,
+"name": "horizontal",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 2 ), ExtResource( 3 ), ExtResource( 1 ) ],
+"loop": false,
+"name": "horizontal_shot",
+"speed": 30.0
+}, {
+"frames": [ ExtResource( 6 ) ],
+"loop": true,
+"name": "vertical",
+"speed": 5.0
+} ]
+
+[sub_resource type="RectangleShape2D" id=9]
+extents = Vector2( 28.5, 6 )
+
+[sub_resource type="CircleShape2D" id=2]
+radius = 39.4588
+
+[node name="Vehicle" type="KinematicBody2D"]
+collision_layer = 2
+collision_mask = 11
+input_pickable = true
+script = ExtResource( 7 )
+
+[node name="Bar" type="ProgressBar" parent="."]
+margin_left = -26.0
+margin_top = -54.0
+margin_right = 25.0
+margin_bottom = -40.0
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_styles/fg = SubResource( 10 )
+
+[node name="Selected" type="Sprite" parent="."]
+position = Vector2( 0, 17 )
+scale = Vector2( 1.84375, 0.999998 )
+texture = ExtResource( 5 )
+
+[node name="scalable" type="Node2D" parent="."]
+
+[node name="Sprite" type="AnimatedSprite" parent="scalable"]
+scale = Vector2( 0.591837, 0.62766 )
+frames = SubResource( 8 )
+animation = "horizontal"
+
+[node name="shootNode" type="Node2D" parent="scalable"]
+
+[node name="shootPoint" type="Position2D" parent="scalable/shootNode"]
+position = Vector2( -24, -14 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0.5, 8 )
+shape = SubResource( 9 )
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 11
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource( 2 )
+
+[node name="all_timer" type="Timer" parent="."]
+autostart = true
+
+[node name="Animation" type="Node2D" parent="."]
+script = ExtResource( 8 )
+
+[node name="Control" type="Node2D" parent="."]
+script = ExtResource( 4 )
+
+[connection signal="input_event" from="." to="." method="_on_Unit_input_event"]
+[connection signal="was_deselected" from="." to="." method="_on_Vehicle_was_deselected"]
+[connection signal="was_selected" from="." to="." method="_on_Vehicle_was_selected"]
+[connection signal="animation_finished" from="scalable/Sprite" to="." method="_on_Sprite_animation_finished"]
+[connection signal="timeout" from="all_timer" to="." method="_on_all_timer_timeout"]
