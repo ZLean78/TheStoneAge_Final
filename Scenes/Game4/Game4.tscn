@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=2]
+[gd_scene load_steps=47 format=2]
 
 [ext_resource path="res://Scenes/Camera/Camera.gd" type="Script" id=1]
 [ext_resource path="res://Scenes/Copper/CopperSmall.png" type="Texture" id=2]
@@ -11,6 +11,7 @@
 [ext_resource path="res://Scenes/Plant/Plant.tscn" type="PackedScene" id=9]
 [ext_resource path="res://Scenes/Puddle/Puddle.tscn" type="PackedScene" id=10]
 [ext_resource path="res://Scenes/fruit_tree/fruit_tree.tscn" type="PackedScene" id=11]
+[ext_resource path="res://Scenes/MouseCollider/MouseCollider.tscn" type="PackedScene" id=12]
 [ext_resource path="res://Scenes/Lake/Lake.tscn" type="PackedScene" id=13]
 [ext_resource path="res://Scenes/PineTree/PineTree.tscn" type="PackedScene" id=14]
 [ext_resource path="res://Scenes/Cave/Cave.tscn" type="PackedScene" id=15]
@@ -708,6 +709,8 @@ margin_top = 1.0
 margin_right = 52.0
 margin_bottom = 26.0
 text = "Siguiente Escena"
+
+[node name="MouseCollider" parent="." instance=ExtResource( 12 )]
 
 [connection signal="is_arrow" from="." to="." method="_on_Game4_is_arrow"]
 [connection signal="is_axe" from="." to="." method="_on_Game4_is_axe"]

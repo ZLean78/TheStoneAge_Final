@@ -13,6 +13,7 @@ onready var mammoths=$Mammoths
 var is_warchief_dead = false
 
 
+onready var mouse_collider=$MouseCollider
 onready var tree = Globals.current_scene
 onready var food_timer = tree.get_node("food_timer")
 onready var timer_label = tree.get_node("UI/Base/TimerLabel")
@@ -265,6 +266,7 @@ func _unhandled_input(event):
 	if !is_warchief_dead:		
 		
 		if event is InputEventMouseMotion:
+			mouse_collider.position=get_global_mouse_position()
 			if house_mode || townhall_mode:
 				
 				for house in houses.get_children():

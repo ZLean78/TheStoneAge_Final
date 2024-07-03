@@ -35,3 +35,16 @@ func _on_Area2D_mouse_entered():
 
 func _on_Area2D_mouse_exited():
 	mouse_entered=false
+
+
+
+
+
+func _on_Area2D_area_entered(area):
+	if "MouseArea" in area.name:
+		mouse_entered=true
+
+
+func _on_Area2D_area_exited(area):
+	if "MouseArea" in area.name:
+		mouse_entered=false

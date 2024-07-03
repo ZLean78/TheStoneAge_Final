@@ -52,6 +52,7 @@ onready var coppers_node=$Coppers
 
 
 #onready var tiger_timer = tree.get_node("tiger_timer")
+onready var mouse_collider=$MouseCollider
 onready var tile_map = tree.get_node("TileMap")
 onready var puddle = tree.get_node("Puddle")
 onready var quarry1 = tree.get_node("Quarries/Quarry1")
@@ -380,6 +381,7 @@ func _unhandled_input(event):
 	if !is_warchief_dead:
 		
 		if event is InputEventMouseMotion:
+			mouse_collider.position=get_global_mouse_position()
 			if house_mode || tower_mode || barn_mode || fort_mode:
 				
 				for house in houses.get_children():
