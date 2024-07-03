@@ -10,6 +10,8 @@ var is_dead=false
 var speed=35.0
 var life=100
 var tiger_number
+var waited=0
+var projectile_delay=1
 onready var bar=$ProgressBar
 
 export var is_flipped:bool
@@ -57,22 +59,33 @@ func _physics_process(delta):
 			$Scalable.scale.x = 1
 			is_flipped = false
 			
+	if waited>projectile_delay:
+		if body_entered!=null:
+			_get_damage(body_entered)
+		waited=0
+	else:
+		waited+=delta
+				
+func _get_damage(var _collider):
+	if is_instance_valid(_collider):
+		if "Stone" in _collider.name:
+			if life>0:
+				life-=20
+			else:
+				Globals.food_points+=60
+				Globals.wood_points+=40
+				Globals.stone_points+=20
+				queue_free()
+
+		if "Bullet" in _collider.name:
+			if life>0:
+				life-=30
+			else:
+				Globals.food_points+=60
+				Globals.wood_points+=40
+				Globals.stone_points+=20
+				queue_free()
 			
-func _get_damage(var the_beast):
-	if "Stone" in the_beast.name:
-		the_beast.queue_free()
-		if life>0:
-			life-=20
-	else:
-		queue_free()
-	
-	if "Bullet" in the_beast.name:
-		the_beast.queue_free()
-		if life>0:
-			life-=30
-	else:
-		queue_free()
-		
 		
 	
 func check_state():
@@ -102,20 +115,8 @@ func check_state():
 
 
 func _on_Area2D_body_entered(body):
-	if "Stone" in body.name:
-		life-=3
-		body.queue_free()
-	
-	if "Bullet" in body.name:
-		life-=10
-		body.queue_free()	
-	
-	if life <=0:
-		Globals.food_points+=60
-		Globals.wood_points+=40
-		Globals.stone_points+=20
-		is_dead=true
-		queue_free()
+	if "Stone" in body.name || "Bullet" in body.name:
+		body_entered=body
 	
 
 func _on_Area2D_body_exited(body):
@@ -141,7 +142,8 @@ func _on_Tiger_mouse_exited():
 
 
 
-	
+
+		
 
 
 func _on_DetectionArea_body_entered(body):
@@ -150,6 +152,9 @@ func _on_DetectionArea_body_entered(body):
 		for tiger in get_parent().get_children():
 			if tiger.visible && is_instance_valid(tiger):
 				tiger.state = 1
+
+
+
 
 
 

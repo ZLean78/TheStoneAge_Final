@@ -63,7 +63,7 @@ onready var enemy_citizens_node=$EnemyCitizens
 onready var next_scene_confirmation = $UI/Base/NextSceneConfirmation
 onready var exit_confirmation=$UI/Base/ExitConfirmation
 onready var replay_confirmation=$UI/Base/ReplayConfirmation
-
+onready var mouse_collider=$MouseCollider
 
 var path=PoolVector2Array()
 
@@ -435,6 +435,7 @@ func _unhandled_input(event):
 	if !is_warchief_dead:
 		
 		if event is InputEventMouseMotion:
+			mouse_collider.position=get_global_mouse_position()
 			if house_mode || tower_mode || barn_mode || fort_mode:
 				
 				for house in houses.get_children():

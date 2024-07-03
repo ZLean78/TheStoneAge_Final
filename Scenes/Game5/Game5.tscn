@@ -1,5 +1,6 @@
-[gd_scene load_steps=49 format=2]
+[gd_scene load_steps=50 format=2]
 
+[ext_resource path="res://Scenes/MouseCollider/MouseCollider.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Fort/Fort.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Copper/Copper.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Scenes/EnemyCitizen/EnemyCitizen.tscn" type="PackedScene" id=4]
@@ -780,6 +781,8 @@ margin_top = 1.0
 margin_right = 52.0
 margin_bottom = 26.0
 text = "Siguiente Escena"
+
+[node name="MouseCollider" parent="." instance=ExtResource( 1 )]
 
 [connection signal="is_arrow" from="." to="." method="_on_Game5_is_arrow"]
 [connection signal="is_axe" from="." to="." method="_on_Game5_is_axe"]
