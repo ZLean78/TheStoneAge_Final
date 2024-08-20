@@ -15,7 +15,6 @@ func _ready():
 	font2 = options_btn.get_font("font")
 	font3 = credits_btn.get_font("font")
 	font4 = quit_btn.get_font("font")
-	Globals._clear_globals()
 	add_child(Globals.settings)
 	AudioPlayer._select_music()
 	AudioPlayer.music.play()
@@ -31,7 +30,7 @@ func _unhandled_input(_event):
 
 func _on_Start_pressed():
 	remove_child(Globals.settings)
-	Globals.go_to_scene("res://Scenes/Game/Game.tscn")
+	Globals.go_to_scene("res://Scenes/Game2/Game2.tscn")
 
 
 func _on_Quit_pressed():

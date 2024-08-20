@@ -18,7 +18,7 @@ func _physics_process(_delta):
 
 
 func _on_Area2D_body_entered(body):
-	if("Citizen" in body.name):
+	if("Unit" in body.name || "EnemyCitizen" in body.name):
 		touching = true
 		body._set_pickable_touching(true)
 		body._set_pickable(self)
@@ -32,7 +32,7 @@ func _on_Area2D_body_entered(body):
 
 
 func _on_Area2D_body_exited(body):
-	if("Citizen" in body.name):
+	if("Unit" in body.name || "EnemyCitizen" in body.name):
 		touching = false
 		body._set_pickable_touching(false)
 		body._set_pickable(null)

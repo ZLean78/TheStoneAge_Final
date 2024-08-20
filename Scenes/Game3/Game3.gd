@@ -13,7 +13,6 @@ onready var mammoths=$Mammoths
 var is_warchief_dead = false
 
 
-onready var mouse_collider=$MouseCollider
 onready var tree = Globals.current_scene
 onready var food_timer = tree.get_node("food_timer")
 onready var timer_label = tree.get_node("UI/Base/TimerLabel")
@@ -43,7 +42,7 @@ onready var lake = tree.get_node("TileMap/Lake")
 onready var spawn_position = $SpawnPosition
 onready var tiger_spawn = $TigerSpawn
 onready var tiger_target = $TigerTarget
-onready var citizens_node = $Citizens
+onready var units = $Units
 onready var warriors = $Warriors
 onready var houses = $Houses
 onready var nav2d = $nav
@@ -57,7 +56,7 @@ var path=[]
 
 var cave
 
-export (PackedScene) var Citizen
+export (PackedScene) var Unit2
 export (PackedScene) var Warrior
 export (PackedScene) var House
 export (PackedScene) var TownHall
@@ -135,7 +134,7 @@ func _ready():
 	
 	prompts_label.text = start_string
 	
-	all_units=get_tree().get_nodes_in_group("citizens")
+	all_units=get_tree().get_nodes_in_group("units")
 	tile_map=tree.find_node("TileMap")
 	cave=tile_map.get_node("Cave")
 	all_trees.append(tree.find_node("fruit_tree"))
@@ -176,7 +175,7 @@ func _ready():
 	$UI.add_child(Globals.settings)
 	
 	for i in range(0,11):
-		_create_citizen();
+		_create_unit();
 	
 	for i in range(0,12):
 		if i==0:
@@ -266,7 +265,6 @@ func _unhandled_input(event):
 	if !is_warchief_dead:		
 		
 		if event is InputEventMouseMotion:
-			mouse_collider.position=get_global_mouse_position()
 			if house_mode || townhall_mode:
 				
 				for house in houses.get_children():
@@ -277,9 +275,6 @@ func _unhandled_input(event):
 					if !a_townhall in obstacles:
 						obstacles.append(a_townhall)
 				
-				obstacles.append(lake)
-				obstacles.append(cave)
-								
 				for an_obstacle in obstacles:
 					if an_obstacle.mouse_entered:
 						is_mouse_entered=true
@@ -318,7 +313,7 @@ func _unhandled_input(event):
 			
 			if house_mode || townhall_mode:
 				#Enviar a los ciudadanos a construir el edificio.
-				for citizen in citizens_node.get_children():
+				for citizen in units.get_children():
 					if citizen.selected:
 						citizen.firstPoint=citizen.global_position
 						citizen.secondPoint=citizen.target_position
@@ -343,7 +338,7 @@ func _unhandled_input(event):
 	
 
 func _create_townhall():
-	var citizens=citizens_node.get_children()
+	var citizens=units.get_children()
 	var the_citizen=null
 	var the_townhall=null
 	
@@ -384,7 +379,7 @@ func _create_townhall():
 				
 func _create_house():
 	#Obtenemos los ciudadanos hijos del nodo units.
-	var citizens=citizens_node.get_children()
+	var citizens=units.get_children()
 	#Obtenemos las casas hijas del nodo houses.
 	var dwells=houses.get_children()
 	#Contador de casas.
@@ -468,27 +463,42 @@ func _check_houses():
 		prompts_label.text="Crea un centro cívico."
 		create_townhall.visible=true	
 	
-func _create_citizen(cost = 0):
-	var new_citizen = Citizen.instance()
+func _create_unit(cost = 0):
+	var new_Unit = Unit2.instance()
 	unit_count+=1
 	if(unit_count%2==0):
-		new_citizen.is_girl=true
+		new_Unit.is_girl=true
 	else:
-		new_citizen.is_girl=false
+		new_Unit.is_girl=false
 	if(Globals.group_dressed):
-		new_citizen.is_dressed=true	
+		new_Unit.is_dressed=true	
 	if(Globals.group_has_bag):
-		new_citizen.has_bag=true	
-		new_citizen.get_child(3).visible = true
+		new_Unit.has_bag=true	
+		new_Unit.get_child(3).visible = true
 	Globals.food_points -= cost
-	new_citizen.position = spawn_position.position
-	for citizen in citizens_node.get_children():
-		if new_citizen.position==citizen.position:
-			new_citizen.position+=Vector2(20,20)		
-	citizens_node.add_child(new_citizen)
-	all_units.append(new_citizen)
+	new_Unit.position = spawn_position.position
+	for unit in units.get_children():
+		if new_Unit.position==unit.position:
+			new_Unit.position+=Vector2(20,20)		
+	units.add_child(new_Unit)
+	all_units.append(new_Unit)
 		
-
+func _create_warrior_unit(cost = 0):
+	var new_Unit = Unit2.instance()
+	unit_count+=1
+	new_Unit.position = Vector2(camera.position.x+rand_range(50,100),camera.position.y+rand_range(50,100))
+	if(unit_count%2==0):
+		new_Unit.is_girl=true
+	else:
+		new_Unit.is_girl=false
+	if(Globals.group_dressed):
+		new_Unit.is_dressed=true	
+	if(Globals.group_has_bag):
+		new_Unit.has_bag=true	
+		new_Unit.get_child(3).visible = true
+	Globals.food_points -= cost
+	units.add_child(new_Unit)
+	all_units.append(new_Unit)
 			
 func _check_victory():
 	for child in townhall_node.get_children():
@@ -517,7 +527,7 @@ func _check_victory():
 	
 func _on_CreateCitizen_pressed():
 	if Globals.food_points>=15:
-		_create_citizen(15)
+		_create_unit(15)
 		
 
 
@@ -778,7 +788,7 @@ func _on_CreateTownHall_pressed():
 		_on_Game3_is_arrow()
 		
 func _update_path(new_obstacle):	
-	var citizens=citizens_node.get_children()
+	var citizens=units.get_children()
 	var the_citizen=null
 	var new_polygon=PoolVector2Array()
 	var col_polygon=new_obstacle.get_node("CollisionPolygon2D").get_polygon()
@@ -863,7 +873,7 @@ func _on_NextSceneOk_pressed():
 		Globals.houses_p.append(house.position)
 	Globals.townhall_p=townhall_node.get_child(0).position
 	var child_index=0
-	for citizen in citizens_node.get_children():
+	for citizen in units.get_children():
 		if citizen.is_warchief:
 			Globals.warchief_index=child_index
 			break

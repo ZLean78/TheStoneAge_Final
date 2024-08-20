@@ -1,7 +1,6 @@
 [gd_scene load_steps=28 format=2]
 
 [ext_resource path="res://Sprites/game/tiles/grass/simple/grass.png" type="Texture" id=1]
-[ext_resource path="res://Scenes/Citizen/Citizen.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Game/Game.gd" type="Script" id=3]
 [ext_resource path="res://Scenes/Game/plant.png" type="Texture" id=4]
 [ext_resource path="res://Scenes/Unit/male1.png" type="Texture" id=5]
@@ -13,6 +12,7 @@
 [ext_resource path="res://Scenes/Game/rain2.png" type="Texture" id=11]
 [ext_resource path="res://Scenes/Game/rain3.png" type="Texture" id=12]
 [ext_resource path="res://Scenes/Game/food.png" type="Texture" id=13]
+[ext_resource path="res://Scenes/Unit2/Unit2.tscn" type="PackedScene" id=14]
 [ext_resource path="res://Scenes/Game/SelectDraw.gd" type="Script" id=15]
 [ext_resource path="res://Scenes/Plant/Plant.tscn" type="PackedScene" id=16]
 [ext_resource path="res://Scenes/Unit/male1_d.png" type="Texture" id=17]
@@ -95,7 +95,7 @@ animations = [ {
 z_index = -1
 z_as_relative = false
 script = ExtResource( 3 )
-Citizen = ExtResource( 2 )
+Unit = ExtResource( 14 )
 
 [node name="TileMap" type="TileMap" parent="."]
 position = Vector2( 0, 1 )
@@ -128,10 +128,10 @@ script = ExtResource( 7 )
 
 [node name="Citizens" type="Node2D" parent="."]
 
-[node name="Citizen" parent="Citizens" instance=ExtResource( 2 )]
-position = Vector2( -689, -476 )
+[node name="Unit" parent="Citizens" instance=ExtResource( 14 )]
+position = Vector2( -712, -376 )
 
-[node name="food_timer" type="Timer" parent="."]
+[node name="all_timer" type="Timer" parent="."]
 autostart = true
 
 [node name="FruitTrees" type="Node2D" parent="."]
@@ -423,7 +423,7 @@ frames = SubResource( 2 )
 
 [connection signal="is_arrow" from="." to="." method="_on_Game_is_arrow"]
 [connection signal="is_basket" from="." to="." method="_on_Game_is_basket"]
-[connection signal="timeout" from="food_timer" to="." method="_on_food_timer_timeout"]
+[connection signal="timeout" from="all_timer" to="." method="_on_all_timer_timeout"]
 [connection signal="timeout" from="Rain_Timer" to="." method="_on_Rain_Timer_timeout"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateCitizen" to="." method="_on_CreateCitizen_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/AddClothes" to="." method="_on_AddClothes_pressed"]

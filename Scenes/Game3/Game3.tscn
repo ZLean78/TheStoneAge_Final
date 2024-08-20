@@ -1,7 +1,7 @@
-[gd_scene load_steps=39 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://Scenes/Cave/Cave.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Scenes/MouseCollider/MouseCollider.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/Unit2/Unit2.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Quarry/Quarry.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Scenes/Tiger/Tiger.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Scenes/PineTree/PineTree.tscn" type="PackedScene" id=5]
@@ -27,7 +27,6 @@
 [ext_resource path="res://Scenes/Game2/food.png" type="Texture" id=25]
 [ext_resource path="res://Scenes/Mammoth/mammoth.tscn" type="PackedScene" id=26]
 [ext_resource path="res://Scenes/House/house.tscn" type="PackedScene" id=27]
-[ext_resource path="res://Scenes/Citizen/Citizen.tscn" type="PackedScene" id=28]
 [ext_resource path="res://Scenes/TownHall/townhall.tscn" type="PackedScene" id=29]
 [ext_resource path="res://Scenes/MouseIcons/townhall_small.png" type="Texture" id=30]
 
@@ -97,7 +96,7 @@ shader = SubResource( 6 )
 
 [node name="Game3" type="Node2D"]
 script = ExtResource( 10 )
-Citizen = ExtResource( 28 )
+Unit2 = ExtResource( 2 )
 Warrior = ExtResource( 16 )
 House = ExtResource( 27 )
 TownHall = ExtResource( 29 )
@@ -148,9 +147,10 @@ navpoly = SubResource( 2 )
 
 [node name="Warriors" type="Node2D" parent="."]
 
-[node name="Citizens" type="Node2D" parent="."]
+[node name="Units" type="Node2D" parent="."]
 
-[node name="Citizen" parent="Citizens" instance=ExtResource( 28 )]
+[node name="Unit2" parent="Units" instance=ExtResource( 2 )]
+position = Vector2( 669, 347 )
 
 [node name="Tigers" type="Node2D" parent="."]
 position = Vector2( 3, -2 )
@@ -601,8 +601,6 @@ dialog_autowrap = true
 
 [node name="damage_timer" type="Timer" parent="."]
 autostart = true
-
-[node name="MouseCollider" parent="." instance=ExtResource( 2 )]
 
 [connection signal="is_arrow" from="." to="." method="_on_Game3_is_arrow"]
 [connection signal="is_axe" from="." to="." method="_on_Game3_is_axe"]

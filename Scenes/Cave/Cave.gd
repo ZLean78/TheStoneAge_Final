@@ -9,7 +9,7 @@ func _ready():
 
 
 func _on_Area2D_body_entered(body):
-	if tree.name=="Game" && "Citizen" in body.name:
+	if tree.name=="Game" && "Unit" in body.name:
 		body.visible=false
 		sheltered_units+=1
 
@@ -35,16 +35,3 @@ func _on_Area2D_mouse_entered():
 
 func _on_Area2D_mouse_exited():
 	mouse_entered=false
-
-
-
-
-
-func _on_Area2D_area_entered(area):
-	if "MouseArea" in area.name:
-		mouse_entered=true
-
-
-func _on_Area2D_area_exited(area):
-	if "MouseArea" in area.name:
-		mouse_entered=false

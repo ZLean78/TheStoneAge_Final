@@ -1,4 +1,4 @@
-extends "res://Scenes/Unit/Unit.gd"
+extends KinematicBody2D
 
 
 var direction=Vector2()
@@ -8,38 +8,38 @@ var firstPoint = Vector2.ZERO
 var secondPoint = Vector2.ZERO
 var index = 0
 
-#var target_position = Vector2.ZERO
-#var velocity = Vector2()
-#var selected=false
-#var to_delta=0.0
-#var is_flipped=false
+var target_position = Vector2.ZERO
+var velocity = Vector2()
+var selected=false
+var to_delta=0.0
+var is_flipped=false
 var can_shoot=true
 var just_shot=false
 var is_enemy_touching=false
 
 #Salud de la unidad.
-#export (float) var health = 100
+export (float) var health = 100
 
 
 onready var nav2d
-#onready var sprite
-#onready var bar
-#onready var foot=$Selected
+onready var sprite
+onready var bar
+onready var foot=$Selected
 onready var shootNode=$scalable/shootNode
 onready var shootPoint=$scalable/shootNode/shootPoint
 
-#export (PackedScene) var stone_scene
+export (PackedScene) var stone_scene
 
-#export (float) var SPEED = 100.0
-#var tree
-#var path=PoolVector2Array()
+export (float) var SPEED = 100.0
+var tree
+var path=PoolVector2Array()
 
 #Señales que informan si la unidad ha sido seleccionada o desseleccionada.
-#signal was_selected
-#signal was_deselected
+signal was_selected
+signal was_deselected
 
 #Para saber si la unidad ha sido eliminada.
-#var is_deleted=false
+var is_deleted=false
 var distance=Vector2.ZERO
 func _ready():
 	health=100
@@ -57,8 +57,8 @@ func _ready():
 	foot=$Selected
 	tree=Globals.current_scene
 	nav2d=tree.get_node("nav")
-#	connect("was_selected",tree,"_select_unit",[self])
-#	connect("was_deselected",tree,"_deselect_unit",[self])
+	connect("was_selected",tree,"_select_unit",[self])
+	connect("was_deselected",tree,"_deselect_unit",[self])
 	
 
 func _physics_process(delta):

@@ -1,11 +1,8 @@
 extends "res://Scenes/Unit/Unit.gd"
 
 
-
-
-
 #Temporizador de comida, agrega un punto de comida por segundo cuando la unidad toca un árbol frutal.
-onready var food_timer = tree.get_node("food_timer")
+#onready var food_timer = tree.get_node("food_timer")
 
 onready var animation=$Animation
 
@@ -18,8 +15,7 @@ onready var warchief_mark=$WarchiefMark
 #Posición inicial, se actualiza cada vez que hacemos click con el botón derecho.
 var startPosition = Vector2()
 
-##Puntos de comida de la unidad.
-#var food_points = 0
+
 
 #Variable que indica si se está arrastrando el mouse sobre la unidad.
 var dragging = true
@@ -43,10 +39,9 @@ var has_bag = false
 
 #Indica si la unidad puede agregar puntos de comida o no.
 var can_add = false
-#Indica si la unidad puede agregar puntos de hojas.
-var can_add_leaves = false
 
-#var can_add_multiple = false
+
+
 
 #Indica si está lloviendo para la unidad.
 var its_raining = false
@@ -54,27 +49,27 @@ var its_raining = false
 #Vector2 que indica el tamaño de la pantalla.
 var screensize = Vector2(ProjectSettings.get("display/window/size/width"),ProjectSettings.get("display/window/size/height"))
 
-#Indica si la unidad está tocando un tgre
+#Indica si la unidad está tocando un enemigo animal.
 var is_enemy_touching=false
 
-#Tigre que la unidad está tocando
-var tiger = null
+##Tigre que la unidad está tocando
+#var tiger = null
 
-#Indica si la unidad está tocando un árbol frutal.
-var fruit_tree_touching = false
-
-#Indica si la unidad está tocando una planta (para obtener hojas).
-var plant_touching = false
-
-#Indica si la unidad está tocando una cantera (para obtener piedra).
-var quarry_touching = false
-
+##Indica si la unidad está tocando un árbol frutal.
+#var fruit_tree_touching = false
+#
+##Indica si la unidad está tocando una planta (para obtener hojas).
+#var plant_touching = false
+#
+##Indica si la unidad está tocando una cantera (para obtener piedra).
+#var quarry_touching = false
+#
 #Indica si la unidad está tocando un charco (para obtener lodo).
 var puddle_touching = false
-
-#Indica si la unidad está tocando un pino (para obtener madera).
-var pine_tree_touching = false
-
+#
+##Indica si la unidad está tocando un pino (para obtener madera).
+#var pine_tree_touching = false
+#
 #Indica si la unidad está tocando el lago (para obtener agua).
 var lake_touching = false
 
@@ -86,12 +81,17 @@ var pickable_touching = false
 var pickable = null
 
 
+#Para saber si la unidad ha sido marcada para eliminación.
+var is_deleted=false
+
+
 #Para saber si la unidad ha sido convertida en jefe guerrero.
 var is_warchief = false
 
+#Indica si la unidad puede disparar.
 var can_shoot = true
 
-
+#Vector que indica la dirección en la que la unidad va a moverse.
 var direction = Vector2.ZERO
 
 
@@ -112,16 +112,33 @@ var index = 0
 onready var nav2d=tree.get_node("nav")
 
 #Variables para curarse o curar a otro
+#Tiempo a esperar para curarse uno mismo.
 var heal_counter=60
+#Si puede curarse ella misma.
 var can_heal_itself=false
+#Si puede curar a otro.
 var can_heal_another
 
 
+
+var heal_timer=null
+var pickable_timer=null
+
 func _ready():
+	heal_timer=Timer.new()
+	heal_timer.set("wait_time",1)
+	heal_timer.set("one_shot",true)
+	heal_timer.connect("timeout",self,"enable_heal",[can_heal_another])
+	add_child(heal_timer)
 	
+	pickable_timer=Timer.new()
+	pickable_timer.set("wait_time",1)
+	pickable_timer.set("one_shot",true)
+	pickable_timer.connect("timeout",self,"enable_pickable")
+	add_child(pickable_timer)
 	
 	bar=$Bar
-	all_timer=$all_timer
+	
 	foot=$Selected
 	
 	sprite = $scalable/sprite
@@ -193,14 +210,44 @@ func _physics_process(delta):
 		sprite.stop()
 	else:
 		sprite.play()
+		
 	
+		
 	
+			
+	
+	if is_warchief:
+		var self_heal_timer=get_tree().create_timer(1.0).connect("timeout",self,"decrease_heal_counter")
+		
+
+			
+
+
+	if can_heal_itself:
+		self_heal()
+
 
 	
 	
 		
-	if(all_timer.is_stopped()):
-		all_timer.start()
+
+	var shoot_timer=get_tree().create_timer(2.0).connect("timeout",self,"enable_shot")
+		
+
+#
+#	if timer_count>4:
+#		timer_count=0
+		
+	
+	if is_warchief && can_heal_another:
+		if body_entered!=null && is_instance_valid(body_entered):
+			if "Unit" in body_entered.name || "Warrior" in body_entered.name && !("Enemy" in body_entered.name):
+				heal(body_entered)
+	
+	heal_timer.start()
+	pickable_timer.start()
+		
+	
 		
 	
 		
@@ -304,48 +351,48 @@ func _get_rain_damage():
 					bar._update_energy()
 		
 func _get_damage(var _collider):
-	
-	if "Tiger" in _collider.name && _collider.visible && is_enemy_touching:
-		if is_warchief:
-			if(health>0):
+	if _collider!=null && is_instance_valid(_collider):
+		if "Tiger" in _collider.name && _collider.visible && is_enemy_touching:
+			if is_warchief:
+				if(health>0):
+					health-=MIN_ENERGY_LOSS
+					bar._set_health(health)
+					bar._update_energy()
+				else:
+					_set_selected(false)			
+					is_deleted=true				
+			else:
+				if(health>0):
+					health-=MAX_ENERGY_LOSS
+					bar._set_health(health)
+					bar._update_energy()
+				else:
+					_set_selected(false)			
+					is_deleted=true
+		if "Mammoth" in _collider.name && is_enemy_touching:
+			if health>0:
+				health-=(MAX_ENERGY_LOSS+15)
+				bar._set_health(health)
+				bar._update_energy()
+			else:
+				_set_selected(false)			
+				is_deleted=true	
+		if "EnemySpear" in _collider.name:
+			if health>0:
 				health-=MIN_ENERGY_LOSS
 				bar._set_health(health)
 				bar._update_energy()
 			else:
 				_set_selected(false)			
-				is_deleted=true				
-		else:
-			if(health>0):
-				health-=MAX_ENERGY_LOSS
+				is_deleted=true					
+		if "Stone" in _collider.name && _collider.owner_name=="EnemyCitizen":
+			if health>0:
+				health-=MIN_ENERGY_LOSS
 				bar._set_health(health)
 				bar._update_energy()
 			else:
 				_set_selected(false)			
-				is_deleted=true
-	if "Mammoth" in _collider.name && is_enemy_touching:
-		if health>0:
-			health-=(MAX_ENERGY_LOSS+15)
-			bar._set_health(health)
-			bar._update_energy()
-		else:
-			_set_selected(false)			
-			is_deleted=true	
-	if "EnemySpear" in _collider.name:
-		if health>0:
-			health-=MIN_ENERGY_LOSS
-			bar._set_health(health)
-			bar._update_energy()
-		else:
-			_set_selected(false)			
-			is_deleted=true					
-	if "Stone" in _collider.name && _collider.owner_name=="EnemyCitizen":
-		if health>0:
-			health-=MIN_ENERGY_LOSS
-			bar._set_health(health)
-			bar._update_energy()
-		else:
-			_set_selected(false)			
-			is_deleted=true							
+				is_deleted=true							
 	
 
 		
@@ -408,37 +455,12 @@ func _on_fruit_tree_fruit_tree_entered():
 func _on_fruit_tree_fruit_tree_exited():
 	can_add = false
 	is_sheltered = false
-	
-#func _on_plant_plant_entered():
-#	can_add_leaves = true;
-	
-#func _on_plant_plant_exited():
-#	can_add_leaves = false;
 
-#func _on_tiger_tiger_entered():
-#	is_tiger_touching=true
-
-#func _on_tiger_tiger_exited():
-#	is_tiger_touching=false
-
-#func _on_player_mouse_entered():
-#	selected = true
-
-	
-#func _set_fruit_tree_touching(var _fruit_tree):
-#	fruit_tree_touching=_fruit_tree
-#
-#func _set_plant_touching(var _plant):
-#	plant_touching=_plant
-#
-#func _set_quarry_touching(var _quarry):
-#	quarry_touching=_quarry
 	
 func _set_puddle_touching(var _puddle):
 	puddle_touching=_puddle
 	
-#func _set_pine_tree_touching(var _pine_tree):
-#	pine_tree_touching=_pine_tree
+
 
 func _set_lake_touching(var _lake):
 	lake_touching=_lake
@@ -455,44 +477,46 @@ func _set_its_raining(var _its_raining):
 func _set_erased(var _is_erased):
 	is_erased=_is_erased
 	
-#func _check_fruit_tree_touching():
-#	_set_fruit_tree_touching(fruit_tree_touching)
-	
-#func _check_plant_touching():
-#	_set_plant_touching(plant_touching)
-
-#func _check_quarry_touching():
-#	_set_quarry_touching(quarry_touching)
-	
-#func _check_puddle_touching():
-#	_set_puddle_touching(puddle_touching)
-	
-#func _check_pine_tree_touching():
-#	_set_pine_tree_touching(pine_tree_touching)
-	
-
 
 
 func _die():
 	queue_free()
 
-func _on_Area2D_body_entered(body):
-	body_entered=body
-	if is_warchief:
-		if ("Unit" in body_entered.name || "Warrior" in body_entered.name) && !"Enemy" in body_entered.name:
-			if all_timer.stop():
-				heal(body_entered)
+#########TIMER FUNCTIONS################
+func decrease_heal_counter():
+	if health<MAX_HEALTH && heal_counter>0:
+		heal_counter-=1
+		if heal_counter<=0:
+			can_heal_itself=true
+
+func enable_heal(_can_heal_another):
+	_can_heal_another=!_can_heal_another
+
+func enable_shot():
+	can_shoot=!can_shoot
 	
-func heal(_body):	
+func enable_pickable():
+	if pickable!=null:
+		_collect_pickable(pickable)
+	
+		
+func heal(_body):
 	if _body.health<_body.MAX_HEALTH:
 		_body.health+=5
-		_body.bar._set_health(health)
+		_body.bar._set_health(_body.health)
 		_body.bar._update_energy()
+		can_heal_another=false
+		return
+				
+				
 		
-		if _body.health>_body.MAX_HEALTH:
-			_body.health=_body.MAX_HEALTH
+	if _body.health>_body.MAX_HEALTH:
+		_body.health=_body.MAX_HEALTH
+			
+	can_heal_another=false
+			
 		
-	_body.bar.visible=true
+		
 		
 			
 func self_heal():	
@@ -507,11 +531,6 @@ func self_heal():
 			heal_counter=60
 		
 
-
-func _on_Area2D_body_exited(body):
-	body_entered=body
-	if "Unit" in body_entered.name || "Warrior" in body_entered.name:
-		can_heal_another=false
 
 
 func _shoot():
@@ -566,30 +585,58 @@ func _walk():
 	path = arrPath
 	index = 0				
 			
-func _on_all_timer_timeout():
-	if its_raining:
-		_get_rain_damage()
+#func _on_all_timer_timeout():
+#
+#	if its_raining:
+#		_get_rain_damage()
+#
+#	timer_count+=1
+#
+#
+#
+#	if body_entered!=null && is_instance_valid(body_entered):
+#		_get_damage(body_entered)
+#
+#
+#		if is_warchief:
+#
+#			if timer_count>3:
+#				can_heal_another=true
+#
+#			if health<MAX_HEALTH && heal_counter>0:
+#				heal_counter-=1
+#				if heal_counter<=0:
+#					can_heal_itself=true
+#
+#
+#			if can_heal_itself && timer_count>3:
+#				self_heal()
+#
+##			if can_heal_another:
+##				if "Unit" in body_entered.name || "Warrior" in body_entered.name && !("Enemy" in body_entered.name):
+##					heal(body_entered)
+#
+#
+#	if pickable!=null:
+#		_collect_pickable(pickable)
+#
+#
+#	if timer_count>3:
+#		can_shoot=true
+#
+#
+#	if timer_count>4:
+#		timer_count=0
 	
-	timer_count+=1
-	if body_entered!=null && is_instance_valid(body_entered):
-		_get_damage(body_entered)
-		if is_warchief:
-		
-			if health<MAX_HEALTH && heal_counter>0:
-				heal_counter-=1
-				if heal_counter<=0:
-					can_heal_itself=true
-		
-			
-			if can_heal_itself && timer_count>3:
-				self_heal()
-		
-	if pickable!=null:
-		_collect_pickable(pickable)
-	if timer_count>3:
-		can_shoot=true
-	if timer_count>4:
-		timer_count=0
-		
-	all_timer.start()	
 	
+
+
+func _on_Area2D_body_entered(body):
+	body_entered=body
+
+
+
+
+
+func _on_Area2D_body_exited(body):
+	body_entered=null

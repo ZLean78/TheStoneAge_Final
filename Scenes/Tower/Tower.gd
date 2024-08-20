@@ -4,7 +4,7 @@ extends StaticBody2D
 export var condition=0
 export var condition_max=0
 onready var tree
-onready var citizens
+onready var units
 onready var timer=$Timer
 onready var polygon=$CollisionPolygon2D
 #onready var all_timer=get_tree().root.get_child(0).get_node("food_timer")
@@ -25,7 +25,7 @@ export var spear_scene=preload("res://Scenes/Bullet/Bullet.tscn")
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	tree=Globals.current_scene
-	citizens=tree.get_node("Citizens")
+	units=tree.get_node("Units")
 	timer.start()
 
 
@@ -57,19 +57,19 @@ func _get_damage(body):
 
 func _on_Area2D_body_entered(body):
 	body_entered=body
-	if "Citizen" in body.name:
+	if "Unit" in body.name:
 		body.tower_entered=true
 	
 
 
 func _on_Area2D_body_exited(body):
-	if "Citizen" in body.name:
+	if "Unit" in body.name:
 		body_entered=null
 		body.tower_entered=false
 
 
 func _on_Timer_timeout():
-	for citizen in citizens.get_children():
+	for citizen in units.get_children():
 		if citizen.tower_entered && citizen.position.distance_to(self.position)<50:
 			_tower_build()
 	if can_shoot==false:

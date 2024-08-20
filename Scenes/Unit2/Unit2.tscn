@@ -77,6 +77,8 @@ position = Vector2( 1, -18 )
 scale = Vector2( 0.63281, 0.49219 )
 texture = ExtResource( 8 )
 
+[node name="Mouse_Control" type="Node" parent="."]
+
 [node name="Bar" parent="." instance=ExtResource( 1 )]
 position = Vector2( -7, -19 )
 
@@ -109,9 +111,6 @@ collision_mask = 3
 position = Vector2( 0.5, -1.5 )
 shape = SubResource( 4 )
 
-[node name="all_timer" type="Timer" parent="."]
-autostart = true
-
 [node name="Animation" type="Node2D" parent="."]
 script = ExtResource( 9 )
 
@@ -121,4 +120,3 @@ script = ExtResource( 10 )
 [connection signal="input_event" from="." to="." method="_on_Unit_input_event"]
 [connection signal="body_entered" from="Area2D" to="." method="_on_Area2D_body_entered"]
 [connection signal="body_exited" from="Area2D" to="." method="_on_Area2D_body_exited"]
-[connection signal="timeout" from="all_timer" to="." method="_on_all_timer_timeout"]

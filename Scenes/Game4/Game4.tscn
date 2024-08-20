@@ -1,17 +1,16 @@
-[gd_scene load_steps=47 format=2]
+[gd_scene load_steps=46 format=2]
 
 [ext_resource path="res://Scenes/Camera/Camera.gd" type="Script" id=1]
 [ext_resource path="res://Scenes/Copper/CopperSmall.png" type="Texture" id=2]
 [ext_resource path="res://Scenes/Camera/SelectDraw.gd" type="Script" id=3]
 [ext_resource path="res://Scenes/Game2/gray_texture.png" type="Texture" id=4]
-[ext_resource path="res://Scenes/Citizen/Citizen.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Scenes/Game2/male1_d.png" type="Texture" id=6]
 [ext_resource path="res://Scenes/MouseIcons/carpentry_m.png" type="Texture" id=7]
 [ext_resource path="res://Sprites/game/tiles/grass/simple/grass.png" type="Texture" id=8]
 [ext_resource path="res://Scenes/Plant/Plant.tscn" type="PackedScene" id=9]
 [ext_resource path="res://Scenes/Puddle/Puddle.tscn" type="PackedScene" id=10]
 [ext_resource path="res://Scenes/fruit_tree/fruit_tree.tscn" type="PackedScene" id=11]
-[ext_resource path="res://Scenes/MouseCollider/MouseCollider.tscn" type="PackedScene" id=12]
+[ext_resource path="res://Scenes/Unit2/Unit2.tscn" type="PackedScene" id=12]
 [ext_resource path="res://Scenes/Lake/Lake.tscn" type="PackedScene" id=13]
 [ext_resource path="res://Scenes/PineTree/PineTree.tscn" type="PackedScene" id=14]
 [ext_resource path="res://Scenes/Cave/Cave.tscn" type="PackedScene" id=15]
@@ -105,7 +104,7 @@ shader = SubResource( 14 )
 
 [node name="Game4" type="Node2D"]
 script = ExtResource( 27 )
-Citizen = ExtResource( 5 )
+Unit2 = ExtResource( 12 )
 Warrior = ExtResource( 31 )
 House = ExtResource( 29 )
 TownHall = ExtResource( 30 )
@@ -199,11 +198,13 @@ condition_max = 80
 
 [node name="Towers" type="Node2D" parent="."]
 
-[node name="Citizens" type="Node2D" parent="."]
+[node name="Units" type="Node2D" parent="."]
 process_priority = 1
 z_as_relative = false
 
-[node name="Citizen" parent="Citizens" instance=ExtResource( 5 )]
+[node name="Unit2" parent="Units" instance=ExtResource( 12 )]
+process_priority = 1
+position = Vector2( 719, 387 )
 
 [node name="Warriors" type="Node2D" parent="."]
 z_as_relative = false
@@ -709,8 +710,6 @@ margin_top = 1.0
 margin_right = 52.0
 margin_bottom = 26.0
 text = "Siguiente Escena"
-
-[node name="MouseCollider" parent="." instance=ExtResource( 12 )]
 
 [connection signal="is_arrow" from="." to="." method="_on_Game4_is_arrow"]
 [connection signal="is_axe" from="." to="." method="_on_Game4_is_axe"]

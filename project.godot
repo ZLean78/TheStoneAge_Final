@@ -10,7 +10,7 @@ config_version=4
 
 [application]
 
-config/name="TheStoneAge_Final"
+config/name="Zarate_Leandro_Trabajo_Final_Programacion_III_The_Stone_Age_0_1"
 run/main_scene="res://Scenes/Menu/Menu.tscn"
 
 [autoload]

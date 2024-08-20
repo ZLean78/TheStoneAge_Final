@@ -14,7 +14,7 @@ var its_raining = false
 
 #Nodos de escenario.
 onready var tree = Globals.current_scene
-onready var food_timer = $food_timer
+onready var all_timer = $all_timer
 onready var camera = $Camera
 onready var rain_timer = $Rain_Timer
 onready var tile_map = $TileMap
@@ -47,7 +47,7 @@ onready var select_draw=$SelectDraw
 
 
 #Variable unidad ciudadano original a partir de la cual se crean todas las demás.
-export (PackedScene) var Citizen
+export (PackedScene) var Unit
 
 #Arreglos para las unidades en general, para las seleccionadas
 #y las que están a resguardo de la lluvia.
@@ -93,10 +93,10 @@ func _ready():
 	all_plants.append($Plants/Plant)
 	all_plants.append($Plants/Plant2)
 		
-	all_units = get_tree().get_nodes_in_group("citizens")
+	all_units = get_tree().get_nodes_in_group("units")
 	
 	#Creamos la segunda unidad (una mujer), aparte de la original (que es hombre).
-	_create_citizen();
+	_create_unit();
 	
 	#Lugar donde va a aparecer la nueva unidad
 	all_units[all_units.size()-1].position = Vector2(camera.position.x+rand_range(50,100),camera.position.y+rand_range(50,100))
@@ -140,6 +140,7 @@ func _process(_delta):
 		a_unit.its_raining=its_raining
 		
 	_check_units()
+	_check_victory()
 		
 #UNHANDLED INPUT
 func _unhandled_input(event):
@@ -177,27 +178,27 @@ func _unhandled_input(event):
 #FUNCIONES DE CREACIÓN Y CONFIGURACIÓN DE UNIDADES
 
 #Crear unidad.
-func _create_citizen():
+func _create_unit():
 	if Globals.food_points >=15:
-		var new_citizen = Citizen.instance()
-		new_citizen.position = Vector2(-800,-500)
+		var new_Unit = Unit.instance()
+		new_Unit.position = Vector2(-800,-500)
 		unit_count+=1		
 		if(unit_count%2==0):
-			new_citizen.is_girl=true
+			new_Unit.is_girl=true
 		else:
-			new_citizen.is_girl=false
+			new_Unit.is_girl=false
 		if(Globals.group_dressed):
-			new_citizen.is_dressed=true	
+			new_Unit.is_dressed=true	
 			
 		
-		citizens_node.add_child(new_citizen)	
+		citizens_node.add_child(new_Unit)	
 		
 		if(Globals.group_has_bag):
-			new_citizen.has_bag=true	
-			new_citizen.bag_sprite.visible = true	
+			new_Unit.has_bag=true	
+			new_Unit.bag_sprite.visible = true	
 		
 		Globals.food_points-=15	
-		all_units.append(new_citizen)
+		all_units.append(new_Unit)
 
 #Vestir las unidades.		
 func _dress_units():
@@ -361,15 +362,17 @@ func _on_Game_is_arrow():
 #///////////////////////////////////////////////////////////////////
 #SEÑAL DE BOTÓN DE 'CREAR CIUDADANO' PRESIONADO.
 func _on_CreateCitizen_pressed():
-	_create_citizen()
+	_create_unit()
 
-#///////////////////////////////////////////////////////////////////
-#SEÑAL DE TIEMPO TRANSCURRIDO DE TEMPORIZADOR 'FOOD TIMER', LLAMADO ASÍ POR
-#ESTAR PENSADO PARA TEMPORIZAR LA RECOLECCIÖN DE COMIDA PERO USADO LUEGO
-#GENERALMENTE PARA LLAMAR A OTRAS FUNCIONES DE LAS QUE SÓLO QUEDA 'CHECK VICTORY'.
-func _on_food_timer_timeout():
-	if(all_units.size()>-1):
-		_check_victory()
+
+#////////////////////////////////////////////////////////////////////////////////////
+#FUNCIÓN 'CHECK UNITS' para identificar las unidades que han muerto.		
+func _check_units():
+	for a_unit in all_units:
+		if a_unit.is_deleted:
+			var the_unit=all_units[all_units.find(a_unit,0)]
+			all_units.remove(all_units.find(a_unit,0))
+			the_unit._die()
 		
 #////////////////////////////////////////////////////////////////////////////////////
 #FUNCIÓN 'CHECK VICTORY' para evaluar condiciones de derrota o victoria.
@@ -381,14 +384,7 @@ func _check_victory():
 		prompts_label.text = "Has ganado."
 		next_scene_confirmation.visible=true
 		
-#//////////////////////////////////////////////////////////////////////////////////
-#Comprobar si alguna unidad ha sido marcada para borrar y eliminarla.
-func _check_units():
-	for a_unit in all_units:
-		if a_unit.is_deleted:
-			var the_unit=all_units[all_units.find(a_unit,0)]
-			all_units.remove(all_units.find(a_unit,0))
-			the_unit._die()
+
 		
 		
 func _update_path(new_obstacle):	
@@ -447,8 +443,8 @@ func _on_ExitConfirmation_confirmed():
 
 func _on_ReplayOk_pressed():
 	$UI.remove_child(Globals.settings)
+	AudioPlayer._stop_rain()
 	Globals._clear_globals()
-	$"/root/AudioPlayer"._stop_rain()
 	Globals.go_to_scene("res://Scenes/Game/Game.tscn")
 
 
@@ -475,3 +471,16 @@ func _on_Quit_pressed():
 
 func _on_Back_pressed():
 	$UI/Base/Rectangle/OptionsMenu.visible=false
+
+
+#///////////////////////////////////////////////////////////////////
+#SEÑAL DE TIEMPO TRANSCURRIDO DE TEMPORIZADOR 'ALL TIMER', llamado
+#así por llevar a cabo la mayoría de las acciones temporizadas.
+func _on_all_timer_timeout():
+	for a_unit in all_units:
+		if is_instance_valid(a_unit):
+			if a_unit.pickable!=null:
+				a_unit._collect_pickable(a_unit.pickable)
+			
+			if a_unit.its_raining:
+				a_unit._get_rain_damage()

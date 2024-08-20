@@ -52,7 +52,6 @@ onready var coppers_node=$Coppers
 
 
 #onready var tiger_timer = tree.get_node("tiger_timer")
-onready var mouse_collider=$MouseCollider
 onready var tile_map = tree.get_node("TileMap")
 onready var puddle = tree.get_node("Puddle")
 onready var quarry1 = tree.get_node("Quarries/Quarry1")
@@ -65,7 +64,7 @@ onready var lake = tree.get_node("Lake")
 onready var spawn_position = $SpawnPosition
 onready var enemy_spawn = $EnemySpawn
 #onready var tiger_target = $TigerTarget
-onready var citizens_node = $Citizens
+onready var units = $Units
 onready var warriors = $Warriors
 onready var houses = $Houses
 onready var fort_node = $Fort
@@ -86,7 +85,7 @@ var path=[]
 var cave
 
 #Escenas a instanciar (ciudadano, guerrero y cazador, casa, centro cívico).
-export (PackedScene) var Citizen
+export (PackedScene) var Unit2
 export (PackedScene) var Warrior
 export (PackedScene) var House
 export (PackedScene) var TownHall
@@ -194,7 +193,7 @@ func _ready():
 	#de unidades civiles con las que empezamos la fase.	
 	#En este caso, tenemos una sola unidad civil,
 	#luego crearemos las demás.
-	all_units=get_tree().get_nodes_in_group("citizens")
+	all_units=get_tree().get_nodes_in_group("units")
 	
 	#Nodo del mapa de tejas.
 	tile_map=tree.find_node("TileMap")
@@ -381,7 +380,6 @@ func _unhandled_input(event):
 	if !is_warchief_dead:
 		
 		if event is InputEventMouseMotion:
-			mouse_collider.position=get_global_mouse_position()
 			if house_mode || tower_mode || barn_mode || fort_mode:
 				
 				for house in houses.get_children():
@@ -458,7 +456,7 @@ func _unhandled_input(event):
 				#Construimos una casa.
 				_create_house()
 				#Enviar a los ciudadanos a construir la casa.
-				for citizen in citizens_node.get_children():
+				for citizen in units.get_children():
 					citizen.firstPoint=citizen.global_position
 					citizen.secondPoint=citizen.target_position
 					_on_Game4_is_arrow()
@@ -475,7 +473,7 @@ func _unhandled_input(event):
 		
 			if house_mode || fort_mode || tower_mode || barn_mode:
 				#Enviar a los ciudadanos a construir el edificio.
-				for citizen in citizens_node.get_children():
+				for citizen in units.get_children():
 					if citizen.selected:
 						citizen.firstPoint=citizen.global_position
 						citizen.secondPoint=citizen.target_position
@@ -504,7 +502,7 @@ func _unhandled_input(event):
 
 
 func _create_fort():
-	var citizens=citizens_node.get_children()
+	var citizens=units.get_children()
 	var the_citizen=null
 	var the_fort=null
 
@@ -556,7 +554,7 @@ func _create_fort():
 #Función crear torre de vigilancia
 func _create_tower():
 	#Obtenemos los ciudadanos hijos del nodo units.
-	var citizens=citizens_node.get_children()
+	var citizens=units.get_children()
 	#Obtenemos las torres hijas del nodo towers.
 	var towers=tower_node.get_children()
 	#Contador de torres.
@@ -631,7 +629,7 @@ func _create_tower():
 #Función crear granero.
 func _create_barn():
 	#Obtenemos los ciudadanos hijos del nodo units.
-	var citizens=citizens_node.get_children()
+	var citizens=units.get_children()
 	#Obtenemos el granero hijo del node barn_node.
 	var barns=barn_node.get_children()
 	#Contador de graneros.
@@ -704,7 +702,7 @@ func _create_barn():
 #Función crear casa.				
 func _create_house():
 	#Obtenemos los ciudadanos hijos del nodo units.
-	var citizens=citizens_node.get_children()
+	var citizens=units.get_children()
 	#Obtenemos las casas hijas del nodo houses.
 	var dwells=houses.get_children()
 	#Contador de casas.
@@ -780,37 +778,52 @@ func _create_house():
 #Función crear unidad ciudadano.	
 func _create_unit(cost = 0):
 	#Instanciamos la nueva unidad.
-	var new_citizen = Citizen.instance()
+	var new_Unit = Unit2.instance()
 	#Sumamos 1 al contador de unidades.
 	unit_count+=1
 	#Si el número es par, la unidad será mujer,
 	#si es impar, será hombre.
 	if(unit_count%2==0):
-		new_citizen.is_girl=true
+		new_Unit.is_girl=true
 	else:
-		new_citizen.is_girl=false
+		new_Unit.is_girl=false
 	#Si el grupo está vestido, la unidad estará vestida.
 	if(Globals.group_dressed):
-		new_citizen.is_dressed=true	
+		new_Unit.is_dressed=true	
 	#Si el grupo lleva la bolsa de recolección, la unidad también la tendrá.
 	if(Globals.group_has_bag):
-		new_citizen.has_bag=true	
-		new_citizen.get_child(3).visible = true
+		new_Unit.has_bag=true	
+		new_Unit.get_child(3).visible = true
 	#Restamos el costo de la unidad a los puntos de comida.
 	Globals.food_points -= cost
 	#Creamos la unidad en la posición spawn_position.
-	new_citizen.position = spawn_position.position
+	new_Unit.position = spawn_position.position
 	#Pero si ya hay otra unidad en esa posición,
 	#le sumamos a la posición de la unidad un Vector2 de 20x20.
-	for citizen in citizens_node.get_children():
-		if new_citizen.position==citizen.position:
-			new_citizen.position+=Vector2(20,20)	
+	for unit in units.get_children():
+		if new_Unit.position==unit.position:
+			new_Unit.position+=Vector2(20,20)	
 	#Agregamos la unidad al nodo units.	
-	citizens_node.add_child(new_citizen)
+	units.add_child(new_Unit)
 	#Agregamos la unidad al arreglo all_units.
-	all_units.append(new_citizen)
+	all_units.append(new_Unit)
 		
-
+func _create_warrior_unit(cost = 0):
+	var new_Unit = Unit2.instance()
+	unit_count+=1
+	new_Unit.position = Vector2(camera.position.x+rand_range(50,100),camera.position.y+rand_range(50,100))
+	if(unit_count%2==0):
+		new_Unit.is_girl=true
+	else:
+		new_Unit.is_girl=false
+	if(Globals.group_dressed):
+		new_Unit.is_dressed=true	
+	if(Globals.group_has_bag):
+		new_Unit.has_bag=true	
+		new_Unit.get_child(3).visible = true
+	Globals.food_points -= cost
+	units.add_child(new_Unit)
+	all_units.append(new_Unit)
 			
 func _check_victory():
 	if tower_node.get_child_count()>0:
@@ -1250,7 +1263,7 @@ func _on_GiveAttackOrder_pressed():
 
 
 func _update_path(new_obstacle):	
-	var citizens=citizens_node.get_children()
+	var citizens=units.get_children()
 	var the_citizen=null	
 	var new_polygon=PoolVector2Array()
 	var col_polygon=new_obstacle.get_node("CollisionPolygon2D").get_polygon()

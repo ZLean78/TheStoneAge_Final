@@ -4,7 +4,7 @@ extends Node2D
 export var condition=0
 export var condition_max=0
 onready var tree
-onready var citizens
+onready var units
 onready var timer=$Timer
 #onready var all_timer=get_tree().root.get_child(0).get_node("food_timer")
 onready var bar=$Bar
@@ -17,7 +17,7 @@ var body_entered
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	tree=Globals.current_scene
-	citizens=tree.get_node("Citizens")
+	units=tree.get_node("Units")
 	timer.start()
 
 
@@ -32,14 +32,14 @@ func _barn_build():
 
 
 func _on_Area2D_body_entered(body):
-	if "Citizen" in body.name:
+	if "Unit" in body.name:
 		body.barn_entered=true
 	if "EnemySpear" in body.name:
 		body_entered=body
 
 
 func _on_Area2D_body_exited(body):
-	if "Citizen" in body.name:
+	if "Unit" in body.name:
 		body.barn_entered=false
 		
 func _get_damage(body):
@@ -56,7 +56,7 @@ func _get_damage(body):
 
 
 func _on_Timer_timeout():
-	for citizen in citizens.get_children():
+	for citizen in units.get_children():
 		if citizen.barn_entered && citizen.position.distance_to(self.position)<70:
 			_barn_build()
 	if body_entered!=null && is_instance_valid(body_entered):

@@ -21,8 +21,7 @@ export (float) var MIN_ENERGY_LOSS
 #Nodo raíz del nivel.
 onready var tree=Globals.current_scene
 
-#Temporizador de comida, agrega un punto de comida por segundo cuando la unidad toca un árbol frutal.
-onready var all_timer
+
 
 #Contador para considerar acciones en el evento timeout del temporizador "AllTimer"
 var timer_count=0
@@ -71,9 +70,6 @@ signal health_change
 signal im_dead
 #signal food_points_change
 
-#Para saber si la unidad ha sido eliminada.
-var is_deleted=false
-
 #Señales que informan si la unidad ha sido seleccionada o desseleccionada.
 signal was_selected
 signal was_deselected
@@ -112,5 +108,8 @@ func _on_Unit_input_event(_viewport, event, _shape_idx):
 	
 func _set_erased(var _is_erased):
 	is_erased=_is_erased
+
+
+
 
 

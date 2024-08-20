@@ -15,7 +15,7 @@ font_data = ExtResource( 4 )
 
 [sub_resource type="Animation" id=3]
 resource_name = "Billboard"
-length = 10.0
+length = 20.0
 step = 1.0
 tracks/0/type = "value"
 tracks/0/path = NodePath("Narrative:rect_position")
@@ -24,7 +24,7 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 10 ),
+"times": PoolRealArray( 0, 20 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
 "values": [ Vector2( 70, 1000 ), Vector2( 70, -600 ) ]
@@ -49,7 +49,7 @@ tracks/0/keys = {
 script = ExtResource( 2 )
 
 [node name="Background" type="Sprite" parent="."]
-position = Vector2( 779, 486 )
+position = Vector2( 782, 485.5 )
 scale = Vector2( 1.945, 1.61833 )
 texture = ExtResource( 1 )
 
@@ -64,7 +64,7 @@ text = "Aquel pequeño pueblo avanza en su desarrollo a lo largo de los siglos. 
 
 \"Los hemos dejado llegar demasiado lejos. Ante la menor señal de progreso, enviaré tropas a atacar el poblado\".
 
-Luchar contra esos ejércitos es sencillo cuando se trata de avances técnicos efectuados en las viviendas. Defender los logros arquitectónicos, se vuelve mucho más difícil, ante la superioridad numérica del enemigo y su capacidad de organización y coordinación para atacar edificios."
+Luchar contra dichos ejércitos es sencillo cuando se trata de avances técnicos efectuados en las viviendas. Defender los logros arquitectónicos, se vuelve mucho más difícil, ante la superioridad numérica del enemigo y su capacidad de organización y coordinación para atacar edificios."
 autowrap = true
 
 [node name="Button" type="Button" parent="."]

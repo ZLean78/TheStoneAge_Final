@@ -4,14 +4,18 @@ extends Node2D
 export var condition=0
 export var condition_max=0
 onready var tree=Globals.current_scene
-onready var citizens=tree.get_node("Citizens")
+onready var units=tree.get_node("Units")
 onready var timer=$Timer
+#onready var all_timer=get_tree().root.get_child(0).get_node("food_timer")
 onready var bar=$Bar
 onready var polygon=$CollisionPolygon2D
 var mouse_entered=false
 var body_entered
 
 
+
+
+	
 	
 func _ready():
 	
@@ -27,14 +31,15 @@ func _fort_build():
 
 
 func _on_Timer_timeout():
-	for citizen in citizens.get_children():
+	for citizen in units.get_children():
 		if citizen.fort_entered:
 			_fort_build()
 	if body_entered!=null && is_instance_valid(body_entered):
 		_get_damage(body_entered)
 		timer.start()
-
-
+	
+		
+	
 func _get_damage(body):
 	if is_instance_valid(body):
 		if "EnemySpear" in body.name:
@@ -49,13 +54,13 @@ func _get_damage(body):
 
 
 func _on_Area2D_body_entered(body):
-	if "Citizen" in body.name:
+	if "Unit" in body.name:
 		body.fort_entered=true
 	if "EnemySpear" in body.name:
 		body_entered=body
 
 func _on_Area2D_body_exited(body):
-	if "Citizen" in body.name:
+	if "Unit" in body.name:
 		body.fort_entered=false
 
 

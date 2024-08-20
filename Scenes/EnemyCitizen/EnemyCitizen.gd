@@ -90,7 +90,8 @@ var pickable_touching = false
 #Variable que indica el pickable que la unidad está tocando
 var pickable = null
 
-
+#Para saber si la unidad ha sido eliminada.
+var is_deleted=false
 
 
 #Para saber si la unidad ha sido convertida en jefe guerrero.
@@ -102,7 +103,13 @@ var can_shoot = true
 
 var direction = Vector2.ZERO
 
+#var has_arrived = false
 
+#var colliding_body: KinematicBody2D
+
+
+
+#var body_velocity = Vector2.ZERO
 
 #Variables para levantamiento de construcciones, que indican si una unidad ciudadano
 #ha entrado en el Area2D de la construcción para erigirla.
@@ -568,7 +575,7 @@ func _on_Area2D_body_exited(body):
 	
 	
 func _choose_target():
-	if is_instance_valid(body_entered) && body_entered!=null && ("Warrior" in body_entered.name || "Citizen" in body_entered.name || "Vehicle" in body_entered.name) && !("Enemy" in body_entered.name):
+	if is_instance_valid(body_entered) && body_entered!=null && ("Warrior" in body_entered.name || "Unit" in body_entered.name || "Vehicle" in body_entered.name) && !("Enemy" in body_entered.name):
 		target=body_entered
 		target_position=body_entered.position
 	else:
@@ -655,7 +662,7 @@ func _state_machine():
 			target_position=self.position
 			
 	if body_entered!=null && is_instance_valid(body_entered):
-		if !("Enemy" in body_entered.name) && ("Warrior" in body_entered.name || "Citizen" in body_entered.name || "Vehicle" in body_entered.name):
+		if !("Enemy" in body_entered.name) && ("Warrior" in body_entered.name || "Unit" in body_entered.name || "Vehicle" in body_entered.name):
 			target_position=body_entered.position-Vector2(50,50)
 			AI_state=2	
 			if position.distance_to(target_position)<=50:

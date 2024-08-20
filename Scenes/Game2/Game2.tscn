@@ -10,7 +10,7 @@
 [ext_resource path="res://Scenes/Game2/male1_d.png" type="Texture" id=8]
 [ext_resource path="res://Sprites/game/tiles/grass/simple/grass.png" type="Texture" id=9]
 [ext_resource path="res://Scenes/Game2/axe.png" type="Texture" id=10]
-[ext_resource path="res://Scenes/Citizen/Citizen.tscn" type="PackedScene" id=11]
+[ext_resource path="res://Scenes/Unit2/Unit2.tscn" type="PackedScene" id=12]
 [ext_resource path="res://Scenes/Game2/wheel.png" type="Texture" id=13]
 [ext_resource path="res://Scenes/Game2/claypot.png" type="Texture" id=14]
 [ext_resource path="res://Scenes/Game2/fire.png" type="Texture" id=15]
@@ -92,7 +92,7 @@ shader = SubResource( 4 )
 
 [node name="Game2" type="Node2D"]
 script = ExtResource( 6 )
-Citizen = ExtResource( 11 )
+Unit2 = ExtResource( 12 )
 
 [node name="TileMap" type="TileMap" parent="." groups=["tilemap"]]
 position = Vector2( 0, 1 )
@@ -142,11 +142,13 @@ position = Vector2( -870, -466 )
 [node name="TigerTarget" type="Position2D" parent="."]
 position = Vector2( 37, 98 )
 
-[node name="Citizens" type="Node2D" parent="."]
+[node name="Units" type="Node2D" parent="."]
 process_priority = 1
 z_as_relative = false
 
-[node name="Citizen" parent="Citizens" instance=ExtResource( 11 )]
+[node name="Unit2" parent="Units" instance=ExtResource( 12 )]
+process_priority = 1
+position = Vector2( 654, 331 )
 
 [node name="Warriors" type="Node2D" parent="."]
 z_as_relative = false
@@ -218,13 +220,11 @@ navpoly = SubResource( 3 )
 [node name="SelectDraw" type="Node2D" parent="."]
 script = ExtResource( 7 )
 
-[node name="food_timer" type="Timer" parent="."]
+[node name="all_timer" type="Timer" parent="."]
+autostart = true
 
 [node name="tiger_timer" type="Timer" parent="."]
 wait_time = 50.0
-
-[node name="damage_timer" type="Timer" parent="."]
-autostart = true
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -559,6 +559,7 @@ dialog_autowrap = true
 [connection signal="is_hand" from="." to="." method="_on_Game2_is_hand"]
 [connection signal="is_pick_mattock" from="." to="." method="_on_Game2_is_pick_mattock"]
 [connection signal="is_sword" from="." to="." method="_on_Game2_is_sword"]
+[connection signal="timeout" from="all_timer" to="." method="_on_all_timer_timeout"]
 [connection signal="timeout" from="tiger_timer" to="." method="_on_tiger_timer_timeout"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateCitizen" to="." method="_on_CreateCitizen_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/DevelopStoneWeapons" to="." method="_on_DevelopStoneWeapons_pressed"]

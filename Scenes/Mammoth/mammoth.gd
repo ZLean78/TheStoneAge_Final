@@ -23,7 +23,7 @@ onready var citizens
 func _ready():
 	tree=Globals.current_scene
 	warriors=tree.get_node("Warriors")
-	citizens=tree.get_node("Citizens")
+	citizens=tree.get_node("Units")
 	start_position=position
 	progress_bar.value = life
 	if is_flipped==false:
@@ -67,16 +67,16 @@ func _physics_process(delta):
 			is_flipped = false
 			
 			
-func _get_damage(var _collider):
-	if "Stone" in _collider.name:
-		_collider.queue_free()
+func _get_damage(var the_beast):
+	if "Stone" in the_beast.name:
+		the_beast.queue_free()
 		if life>0:
 			life-=10
 	else:
 		queue_free()
 	
-	if "Bullet" in _collider.name:
-		_collider.queue_free()
+	if "Bullet" in the_beast.name:
+		the_beast.queue_free()
 		if life>0:
 			life-=20
 	else:
@@ -113,12 +113,12 @@ func _on_Area2D_body_entered(body):
 		is_dead=true
 		queue_free()
 			
-	if "Citizen" in body.name || "Warrior" in body.name:
+	if "Unit" in body.name || "Warrior" in body.name:
 		body.is_enemy_touching=true
 	
 				
 func _on_Area2D_body_exited(body):
-	if "Citizen" in body.name || "Warrior" in body.name:
+	if "Unit" in body.name || "Warrior" in body.name:
 		body.is_enemy_touching=false
 
 func _on_Mammoth_mouse_entered():
@@ -132,8 +132,12 @@ func _on_Mammoth_mouse_exited():
 	tree._on_Game3_is_arrow()
 
 
+
+	
+
+
 func _on_DetectionArea_body_entered(body):
-	if "Warrior" in body.name || "Citizen" in body.name:
+	if "Warrior" in body.name || "Unit2" in body.name:
 		body_entered=body
 		for mammoth in get_parent().get_children():
 			if is_instance_valid(mammoth):

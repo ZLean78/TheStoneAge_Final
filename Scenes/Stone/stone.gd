@@ -8,7 +8,6 @@ var speedY = 0
 var owner_name=""
 var to_delta
 
-
 func _ready():
 	start_position=position
 
@@ -26,8 +25,7 @@ func move_projectile():
 		if("Unit2" in collision.collider.name || "Warrior" in collision.collider.name || "Vehicle" in collision.collider.name
 		|| "EnemyCitizen" in collision.collider.name || "EnemyWarrior" in collision.collider.name || "EnemyVehicle" in collision.collider.name
 		|| "House" in collision.collider.name || "EnemyHouse" in collision.collider.name
-		|| "Townhall" in collision.collider.name || "EnemyTownhall" in collision.collider.name
-		|| "Tiger" in collision.collider.name || "Mammoth" in collision.collider.name):
+		|| "Townhall" in collision.collider.name || "EnemyTownhall" in collision.collider.name):
 			collision.collider._get_damage(self)
 		queue_free()
 

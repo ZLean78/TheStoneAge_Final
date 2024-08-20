@@ -159,7 +159,9 @@ signal im_dead
 
 func _ready():
 	tree=Globals.current_scene
-	nav2d=tree.get_node("nav")	
+	nav2d=tree.get_node("nav")
+	#connect("was_selected",get_tree().root.get_child(0),"select_unit")
+	#connect("was_deselected",get_tree().root.get_child(0),"deselect_unit")
 	emit_signal("health_change",energy_points)
 	
 	AI_state=3
@@ -305,7 +307,64 @@ func _move_to_target(target):
 			
 	
 
+#func _unhandled_input(event):
+#	if event.is_action_pressed("RightClick"):
+#		if get_tree().root.get_child(0).sword_mode:
+#			if get_tree().root.get_child(0).touching_enemy!=null:
+#				if is_instance_valid(get_tree().root.get_child(0).touching_enemy):
+#					if selected && can_shoot:
+#						var bullet_target = get_tree().root.get_child(0).touching_enemy.position
+#						shoot_node.look_at(bullet_target)				
+#						var angle = shoot_node.rotation
+#						var forward = Vector2(cos(angle),sin(angle))
+#						bullet = bullet_scene.instance()
+#						shoot_point.rotation = angle				
+#						bullet.position = Vector2(shoot_point.global_position.x,shoot_point.global_position.y)
+#						bullet.set_dir(forward)
+#						bullet.rotation = angle
+#						target_position=bullet_target	
+#						var the_tilemap=get_tree().get_nodes_in_group("tilemap")
+#						the_tilemap[0].add_child(bullet)
+#						can_shoot=false
+#				else:
+#					get_tree().root.get_child(0)._on_Game3_is_arrow()
+#		else:
+#			firstPoint=global_position
+#
+#	if event.is_action_released("RightClick"):	
+#		if !get_tree().root.get_child(0).sword_mode:
+#			secondPoint = target_position		
+#			var arrPath: PoolVector2Array = nav2d.get_simple_path(firstPoint,secondPoint,true)
+#			firstPoint = arrPath[0]
+#			path = arrPath
+#			index = 0			
+#
+#
+#func _on_Unit_input_event(_viewport, event, _shape_idx):
+#	if event is InputEventMouseButton:
+#		if event.is_pressed():			
+#			if event.button_index == BUTTON_LEFT:
+#				_set_selected(not selected)
+#				root.select_last()
+				
 
+
+
+
+
+#func hurt(amount):
+#	health-=amount
+#	#esto podría ir en un setter
+#	if health <= 0:
+#		if !dead:
+#			emit_signal("im_dead")
+#			dead = true
+#			set_physics_process(false) 
+#		health = 0
+#		return
+#	elif health > 100:
+#		health = 100
+#	emit_signal("health_change",health)
 
 
 func _on_Target_Position_body_entered(_body):
@@ -465,8 +524,15 @@ func _animate():
 
 
 
+#func _on_tiger_tiger_entered():
+#	is_tiger_touching=true
+
+#func _on_tiger_tiger_exited():
+#	is_tiger_touching=false
+
 func _on_player_mouse_entered():
 	selected = true
+
 
 
 	
@@ -475,22 +541,37 @@ func _set_erased(var _is_erased):
 	
 
 
+#	
+#func _on_all_timer_timeout():
+#	timer_count+=1	
+#
+#	if timer_count>2:
+#		can_shoot=true
+#
+#
+#	if timer_count>4:
+#		timer_count=0
+#
+#
+#	all_timer.start()
+	
+	
 
 func _die():
 	queue_free()
 
 
 func _on_Area2D_body_entered(body):	
-	if (("Tower" in body.name || "Warrior" in body.name || "Citizen" in body.name || "Vehicle" in body.name)
+	if (("Tower" in body.name || "Warrior" in body.name || "Unit" in body.name || "Vehicle" in body.name)
 		&& !("Enemy" in body.name)):		
 		if is_instance_valid(body_entered):
-			if "Warrior" in body.name || "Citizen" in body.name || "Vehicle" in body.name:
+			if "Warrior" in body.name || "Unit" in body.name || "Vehicle" in body.name:
 				body.is_enemy_touching=true
 			
 
 		
 func _on_Area2D_body_exited(body):
-	if "Warrior" in body.name || "Citizen" in body.name:
+	if "Warrior" in body.name || "Unit" in body.name:
 		body.is_enemy_touching=false	
 		
 #
@@ -555,15 +636,15 @@ func _choose_target():
 						target=tree.warriors.get_child(0)
 						target_position=tree.warriors.get_child(0).position	
 			else:
-				if tree.citizens_node.get_child_count()>0:
-					for i in range(0,tree.citizens_node.get_child_count()):
+				if tree.units.get_child_count()>0:
+					for i in range(0,tree.units.get_child_count()):
 						if i!=0:
-							if tree.citizens_node.get_child(i).position.distance_to(position)<tree.citizens_node.get_child(i-1).position.distance_to(position):
-								target=tree.citizens_node.get_child(i)
-								target_position=tree.citizens_node.get_child(i).position
+							if tree.units.get_child(i).position.distance_to(position)<tree.units.get_child(i-1).position.distance_to(position):
+								target=tree.units.get_child(i)
+								target_position=tree.units.get_child(i).position
 						else:
-							target=tree.citizens_node.get_child(0)
-							target_position=tree.citizens_node.get_child(0).position	
+							target=tree.units.get_child(0)
+							target_position=tree.units.get_child(0).position	
 
 func _state_machine():
 	match AI_state:
@@ -590,7 +671,7 @@ func _state_machine():
 	
 	if body_entered!=null && is_instance_valid(body_entered):
 		#print("se ha detectado un cuerpo")
-		if !("Enemy" in body_entered.name) && ("Warrior" in body_entered.name || "Citizen" in body_entered.name):
+		if !("Enemy" in body_entered.name) && ("Warrior" in body_entered.name || "Unit" in body_entered.name):
 			target=body_entered
 			target_position=body_entered.position
 			#print("cambio a estado 2")
@@ -623,7 +704,7 @@ func _on_EnemyWarrior_mouse_exited():
 
 
 func _on_DetectionArea_body_entered(body):
-	if ("Citizen" in body.name || "Warrior" in body.name && !("Enemy" in body.name)):
+	if ("Unit" in body.name || "Warrior" in body.name && !("Enemy" in body.name)):
 		body_entered=body
 		
 
