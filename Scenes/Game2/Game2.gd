@@ -402,7 +402,9 @@ func _on_tiger_timer_timeout():
 
 		
 
-		
+#Identificar y agregar a un arreglo provisorio
+#las unidades marcadas por el rectángulo.
+#Esta función es invocada por la función area_selected.		
 func get_units_in_area(area):
 	var u=[]
 	for unit in all_units:
@@ -411,6 +413,8 @@ func get_units_in_area(area):
 				u.append(unit)
 	return u
 
+#Función area_selected que selecciona o desselecciona las unidades enmarcadas,
+#según el caso
 func _area_selected(obj):
 	var start=obj.start
 	var end=obj.end
@@ -424,14 +428,14 @@ func _area_selected(obj):
 		u.selected = not u.selected
 		
 
-		
+#Mover una sola unidad en particular.		
 func start_move_selection(obj):
 	for un in all_units:
 		if un.selected:
 			un.move_unit(obj.move_to_point)
 		
 
-
+#Mover el grupo de unidades.
 func move_group():
 	var pos_minus_one=0
 	for i in range (0,selected_units.size()):
@@ -445,12 +449,9 @@ func move_group():
 		pos_minus_one=selected_units[i].target_position
 
 
+#####AVANCES DE LA UI#####
 
-#func _on_damage_timer_timeout():
-#	_get_damage()
-
-	
-
+#Desarrollar armas y herramientas de piedra.
 func _on_DevelopStoneWeapons_pressed():
 	if Globals.stone_points>=70 && Globals.wood_points>=70 && Globals.leaves_points >=50:
 		Globals.stone_points-=70
@@ -461,7 +462,7 @@ func _on_DevelopStoneWeapons_pressed():
 		
 		
 
-
+#Inventar la rueda.
 func _on_InventWheel_pressed():
 	if Globals.stone_points >=70 && Globals.wood_points>=40:
 		Globals.stone_points-=70
@@ -469,20 +470,22 @@ func _on_InventWheel_pressed():
 		Globals.is_wheel_invented=true
 		invent_wheel.visible = false
 
+#Descubrir el fuego.
 func _on_DiscoverFire_pressed():
 	if Globals.wood_points >=60 && Globals.stone_points>=40:
 		Globals.wood_points-=60
 		Globals.stone_points-=40
 		Globals.is_fire_discovered=true
 		discover_fire.visible = false
-		
+	
+#Crear cuenco de barro (necesario para poder recoger agua y transportarla).	
 func _on_MakeClaypot_pressed():
 	if Globals.clay_points>=85:
 		Globals.clay_points-=85
 		Globals.is_claypot_made=true
 		make_claypot.visible=false
 
-
+#Desarrollar la agricultuar.
 func _on_DevelopAgriculture_pressed():
 	if Globals.food_points>=70 && Globals.leaves_points>=70 && Globals.water_points>=70:
 		Globals.food_points-=70
@@ -490,8 +493,11 @@ func _on_DevelopAgriculture_pressed():
 		Globals.water_points-=70
 		Globals.is_agriculture_developed=true
 		develop_agriculture.visible=false
+		
+		
+########CAMBIOS DE MODOS DEL MOUSE#######
 
-
+#Modo Flecha
 func _on_Game2_is_arrow():
 	Input.set_custom_mouse_cursor(Globals.arrow)
 	arrow_mode=true
@@ -502,7 +508,7 @@ func _on_Game2_is_arrow():
 	hand_mode=false
 	axe_mode=false
 
-
+#Modo Canasta
 func _on_Game2_is_basket():
 	Input.set_custom_mouse_cursor(Globals.basket)
 	basket_mode=true
@@ -512,7 +518,8 @@ func _on_Game2_is_basket():
 	claypot_mode=false
 	hand_mode=false
 	axe_mode=false
-	
+
+#Modo Pico	
 func _on_Game2_is_pick_mattock():
 	Input.set_custom_mouse_cursor(Globals.pick_mattock)
 	mattock_mode=true
@@ -523,7 +530,7 @@ func _on_Game2_is_pick_mattock():
 	hand_mode=false
 	axe_mode=false
 
-
+#Modo Espada
 func _on_Game2_is_sword():
 	Input.set_custom_mouse_cursor(Globals.sword)
 	sword_mode=true
@@ -535,7 +542,7 @@ func _on_Game2_is_sword():
 	axe_mode=false
 	
 
-
+#Modo Mano
 func _on_Game2_is_hand():
 	Input.set_custom_mouse_cursor(Globals.hand)
 	hand_mode=true
@@ -547,7 +554,7 @@ func _on_Game2_is_hand():
 	axe_mode=false
 	
 
-
+#Modo Cuenco de Barro
 func _on_Game2_is_claypot():
 	Input.set_custom_mouse_cursor(Globals.claypot)
 	claypot_mode=true
@@ -558,7 +565,7 @@ func _on_Game2_is_claypot():
 	hand_mode=false
 	axe_mode=false
 
-
+#Modo Hacha
 func _on_Game2_is_axe():
 	Input.set_custom_mouse_cursor(Globals.axe)
 	axe_mode=true
@@ -570,7 +577,7 @@ func _on_Game2_is_axe():
 	hand_mode=false
 
 
-
+#Controlar si hay unidades marcadas para morir.
 func _check_units():
 	for a_unit in all_units:
 		if a_unit.is_deleted:
@@ -578,7 +585,8 @@ func _check_units():
 			all_units.remove(all_units.find(a_unit,0))
 			the_unit._die()
 	
-	
+
+#Actualizar el path de navegación de cada unidad ciudadano seleccionada.	
 func _update_path(new_obstacle):	
 	var citizens=units.get_children()
 	var the_citizen=null
@@ -602,6 +610,7 @@ func _update_path(new_obstacle):
 		path = Array(p)
 		path.invert()
 
+#Reconstruir el mapa de navegación.
 func _rebake_navigation():
 	nav2d.get_node("polygon").enabled=false
 	var navi_polygon=nav2d.get_node("polygon").get_navigation_polygon()
@@ -629,44 +638,48 @@ func _rebake_navigation():
 	nav2d.get_node("polygon").enabled=true
 	
 
+#####SEÑALES DE CAJAS DE DIÁLOGO DE FASE#######
 
+#Señal del botón de salir.
 func _on_ExitConfirmation_confirmed():
 	$UI.remove_child(Globals.settings)
 	Globals.go_to_scene("res://Scenes/Menu/Menu.tscn")
 
 
-
+#Señal del botón de volver a jugar (cuando se pierde).
 func _on_ReplayOk_pressed():
 	$UI.remove_child(Globals.settings)
 	get_tree().reload_current_scene()
 
-
+#Señal del botón de no volver a jugar.
 func _on_ReplayCancel_pressed():
 	exit_confirmation.popup()
 	exit_confirmation.get_ok().text="Aceptar"
 	exit_confirmation.get_cancel().text="Cancelar"
 
-
+#Señal del botón de pasar a la siguente fase.
 func _on_NextSceneOk_pressed():
 	$UI.remove_child(Globals.settings)
 	Globals.go_to_scene("res://Scenes/Intermissions/Intermission2.tscn")
 
-
+#Señal del botón de ir a los ajustes.
 func _on_Settings_pressed():
 	Globals.settings.visible=true
 
-
+#Botón de salir del menú de opciones.
 func _on_Quit_pressed():
 	exit_confirmation.popup()
 	exit_confirmation.get_ok().text="Aceptar"
 	exit_confirmation.get_cancel().text="cancelar"
 
-
+#Botón de volver del menú de opciones.
 func _on_Back_pressed():
 	$UI/Base/Rectangle/OptionsMenu.visible=false
 
-
+#Señal timeout del temporizador all_timer.
 func _on_all_timer_timeout():
+	#Interacción de cada unidad con las fuentes de recursos
+	#y los animales enemigos.
 	for a_unit in all_units:
 		if is_instance_valid(a_unit):
 			if a_unit.pickable!=null:
