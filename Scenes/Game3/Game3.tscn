@@ -197,7 +197,7 @@ is_flipped = true
 wait_time = 40.0
 one_shot = true
 
-[node name="food_timer" type="Timer" parent="."]
+[node name="all_timer" type="Timer" parent="."]
 
 [node name="FruitTrees" type="Node2D" parent="."]
 

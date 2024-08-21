@@ -17,7 +17,6 @@ onready var tree = Globals.current_scene
 onready var all_timer = $all_timer
 onready var camera = $Camera
 onready var rain_timer = $Rain_Timer
-onready var tile_map = $TileMap
 onready var cave = $Cave/Cave
 onready var lake=$Lake/Lake
 onready var citizens_node=$Citizens

@@ -5,16 +5,20 @@ extends Node2D
 var unit_count = 1
 
 
-#Nodo de mamuts.
-onready var mammoths=$Mammoths
-
 
 #El jefe ha muerto.
 var is_warchief_dead = false
 
 
+##############VARIABLES ONREADY VAR####################
+#Escena Actual
 onready var tree = Globals.current_scene
-onready var food_timer = tree.get_node("food_timer")
+
+#UI
+#Rectángulo Contenedor
+onready var rectangle = tree.get_node("UI/Base/Rectangle")
+
+#Etiquetas
 onready var timer_label = tree.get_node("UI/Base/TimerLabel")
 onready var food_label = tree.get_node("UI/Base/Rectangle/FoodLabel")
 onready var prompts_label = tree.get_node("UI/Base/Rectangle/PromptsLabel")
@@ -23,44 +27,69 @@ onready var stone_label = tree.get_node("UI/Base/Rectangle/StoneLabel")
 onready var clay_label = tree.get_node("UI/Base/Rectangle/ClayLabel")
 onready var wood_label = tree.get_node("UI/Base/Rectangle/WoodLabel")
 onready var water_label = tree.get_node("UI/Base/Rectangle/WaterLabel")
-#onready var developments_label = tree.get_node("UI/Base/Rectangle/DevelopmentsLabel")
-onready var rectangle = tree.get_node("UI/Base/Rectangle")
-#onready var create_shack = tree.get_node("UI/Base/Rectangle/CreateHouse")
+
+#Botones
 onready var give_attack_order = tree.get_node("UI/Base/Rectangle/GiveAttackOrder")
 onready var make_warchief = tree.get_node("UI/Base/Rectangle/MakeWarchief")
 onready var create_house = tree.get_node("UI/Base/Rectangle/CreateHouse")
 onready var create_townhall = tree.get_node("UI/Base/Rectangle/CreateTownHall")
 onready var create_warrior = tree.get_node("UI/Base/Rectangle/CreateWarriorUnit")
 
+#Cámara
 onready var camera = tree.get_node("Camera")
+
+#Temporizadores
+onready var all_timer = tree.get_node("all_timer")
 onready var tiger_timer = tree.get_node("tiger_timer")
-onready var tile_map = tree.get_node("TileMap")
+
+
+#########FUENTES DE RECURSOS RECOLECTABLES##########
+####QUE SON HIJAS DEL TILEMAP#######
 onready var puddle = tree.get_node("TileMap/Puddle")
 onready var quarry1 = tree.get_node("TileMap/Quarry1")
 onready var quarry2 = tree.get_node("TileMap/Quarry2")
 onready var lake = tree.get_node("TileMap/Lake")
+
+#Posiciones
+#de creación de unidades.
 onready var spawn_position = $SpawnPosition
+#de creación de tigres.
 onready var tiger_spawn = $TigerSpawn
+#de objetivo de tigres
 onready var tiger_target = $TigerTarget
+
+#####NODOS DE TIPOS DE ENTIDADES##########
+#(del equipo del jugador)
 onready var units = $Units
+onready var fruit_trees=$FruitTrees
+onready var pine_trees=$PineTrees
+onready var plants=$Plants
 onready var warriors = $Warriors
 onready var houses = $Houses
 onready var nav2d = $nav
 onready var townhall_node=$TownHall
+onready var tigers=$Tigers
+onready var mammoths=$Mammoths
+onready var quarries=$Quarries
+
+###CAJAS DE DIÁLOGO POPUPS PERSONALIZADAS####
 onready var next_scene_confirmation = $UI/Base/Rectangle/NextSceneConfirmation
 onready var exit_confirmation=$UI/Base/ExitConfirmation
 onready var replay_confirmation=$UI/Base/Rectangle/ReplayConfirmation
 
-
+#Arreglo del path de las unidades del jugador.
 var path=[]
 
+#Cueva
 var cave
 
+#####ESCENAS PRECARGADAS DE ENTIDADES####
 export (PackedScene) var Unit2
 export (PackedScene) var Warrior
 export (PackedScene) var House
 export (PackedScene) var TownHall
 
+####ARREGLOS DE ENTIDADES#####
 var selected_units=[]
 var all_units=[]
 var all_plants=[]
@@ -75,7 +104,7 @@ var all_tigers=[]
 #unidades van a tener que esquivar.
 var obstacles=[]
 
-
+#Variables para dibujar el rectángulo de selección.
 var dragging = false
 var selected = []
 var drag_start = Vector2.ZERO
@@ -83,22 +112,21 @@ var drag_start = Vector2.ZERO
 #Nodo que dibuja el rectángulo de selección de la cámara.
 onready var select_draw=$SelectDraw
 
-
-#onready var draw_rect = get_tree().root.find_node("draw_rect")
-
+#Si el rectángulo sale o no invertido a la izquierda.
 var is_flipped = false
 
+#Tamaño de pantalla para clamp
 var screensize = Vector2(ProjectSettings.get("display/window/size/width"),ProjectSettings.get("display/window/size/height"))
 
 #Propiedades para evitar crear una construcción encima de otra.
 var is_mouse_entered=false
 var is_too_close=false
 
-
+#Propiedades para comprobar si hay tigres o se ha iniciado el conteo para que aparezcan.
 var is_tiger=false
 var is_tiger_countdown=false
 
-
+######SEÑALES DE MODOS DEL CURSOR PARA RECOLECCIÓN DE RECURSOS#####
 signal is_arrow
 signal is_basket
 signal is_pick_mattock
@@ -106,9 +134,8 @@ signal is_sword
 signal is_claypot
 signal is_hand
 signal is_axe
-#signal is_house
 
-
+######VARIABLES DE MODOS DE CURSOR#####
 var arrow_mode=false
 var basket_mode=false
 var mattock_mode=false
@@ -119,49 +146,34 @@ var axe_mode=false
 var house_mode=false
 var townhall_mode=false
 
+#Mensaje inicial que se muestra en el área de instrucciones.
 var start_string = """Selecciona una unidad de tu grupo y haz clic en el botón
 "convertir en jefe guerrero" para que pase a ser el jefe de tu tribu."""
 
 #Si el cursor está en forma de espada tocando un tigre, lo guardamos en esta variable.
 var touching_enemy
 
+#Variables para crear los guerreros en formación.
 var row=0
 var column=0
 
 func _ready():
+	#Seleccionar y reproducir la música con el autoload AudioPlayer.
 	AudioPlayer._select_music()
 	AudioPlayer.music.play()	
 	
+	#Mostrar el texto de inicio en la etiqueta de instrucciones.
 	prompts_label.text = start_string
 	
-	all_units=get_tree().get_nodes_in_group("units")
-	tile_map=tree.find_node("TileMap")
-	cave=tile_map.get_node("Cave")
-	all_trees.append(tree.find_node("fruit_tree"))
-	all_trees.append(tree.find_node("fruit_tree2"))
-	all_trees.append(tree.find_node("fruit_tree3"))
-	all_trees.append(tree.find_node("fruit_tree4"))
-	all_trees.append(tree.find_node("fruit_tree5"))
-	all_trees.append(tree.find_node("fruit_tree6"))
-	all_plants.append(tree.find_node("Plant"));
-	all_plants.append(tree.find_node("Plant2"));
-	#all_units.append(tree.find_node("Unit2"))
+	#Cargar los arreglos con los hijos de cada nodo
+	#de tipos de entidades.
+	all_units=units.get_children()
+	all_trees=fruit_trees.get_children()
+	all_pine_trees=pine_trees.get_children()
+	all_plants=plants.get_children()
+	all_tigers=tigers.get_children()	
 	
-	
-	all_pine_trees.append(tree.find_node("PineTree1"))
-	all_pine_trees.append(tree.find_node("PineTree2"))
-	all_pine_trees.append(tree.find_node("PineTree3"))
-	all_pine_trees.append(tree.find_node("PineTree4"))
-	all_pine_trees.append(tree.find_node("PineTree5"))
-	all_pine_trees.append(tree.find_node("PineTree6"))
-	all_pine_trees.append(tree.find_node("PineTree7"))
-	all_pine_trees.append(tree.find_node("PineTree8"))
-	
-	
-	all_tigers.append(tree.find_node("Tiger1"))
-	all_tigers.append(tree.find_node("Tiger2"))
-	all_tigers.append(tree.find_node("Tiger3"))
-	
+	#Posicionar a los tigres que van a aparecer.
 	all_tigers[0].position=Vector2(tiger_spawn.position.x,tiger_spawn.position.y-100)
 	all_tigers[0].tiger_number=1
 	all_tigers[1].position=Vector2(tiger_spawn.position.x,tiger_spawn.position.y-200)
@@ -169,18 +181,22 @@ func _ready():
 	all_tigers[2].position=Vector2(tiger_spawn.position.x,tiger_spawn.position.y-300)
 	all_tigers[2].tiger_number=3
 
+	#Agregar las canteras una por una, porque son hijas del Tilemap.
 	all_quarries.append(quarry1)
 	all_quarries.append(quarry2)
 	
+	
+	#Adjuntar como hijo de la UI el autoload Globals.settings.
 	$UI.add_child(Globals.settings)
 	
+	#Crear 11 unidades aparte de la que ya está.
 	for i in range(0,11):
 		_create_unit();
 	
+	#Hacer formar a las unidades.
 	for i in range(0,12):
 		if i==0:
-			all_units[i].position = Vector2(camera.position.x+50,camera.position.y+50)
-			#all_units[i].position = Vector2(camera.get_viewport().size.x/6,camera.get_viewport().size.y/4)
+			all_units[i].position = Vector2(camera.position.x+50,camera.position.y+50)			
 		else:
 			if i<4:
 				all_units[i].position =	Vector2(all_units[i-1].position.x+20,all_units[i-1].position.y)
@@ -195,6 +211,7 @@ func _ready():
 				else:
 					all_units[i].position = Vector2(all_units[i-1].position.x+20,all_units[i-1].position.y)
 	
+	#Reconstruir el mapa de navegación.
 	_rebake_navigation()
 	
 	#Agregar ropa y bolso a todas las unidades
@@ -209,8 +226,8 @@ func _ready():
 		Globals.group_dressed=true
 		Globals.group_has_bag=true
 	
-#	
 
+	#Poner el cursor en modo flecha.
 	emit_signal("is_arrow")
 	arrow_mode=true
 	basket_mode=false
@@ -222,9 +239,10 @@ func _ready():
 	
 
 func _process(_delta):
-	
+	#Si el jefe no está muerto.
 	if !is_warchief_dead:
-	
+		#Mostrar los valores globales de recursos y el tiempo para el ataque
+		#enemigo en las etiquetas.
 		timer_label.text = "ATAQUE ENEMIGO: " + str(int(tiger_timer.time_left))
 		food_label.text = str(int(Globals.food_points))
 		leaves_label.text = str(int(Globals.leaves_points))	
@@ -233,15 +251,17 @@ func _process(_delta):
 		wood_label.text = str(int(Globals.wood_points))
 		water_label.text = str(int(Globals.water_points))
 	
-	
+		#Controlar las unidades, los mamuts, las casas, la condición de victoria
+		#y los modos del mouse.
 		_check_units()
 		_check_mammoths()
 		_check_houses()
 		_check_victory()
 		_check_mouse_modes()
 
-		
-		
+		#Si no hay tigres y no ha iniciado la cuenta regresiva para que 
+		#aparezcan, iniciar el temporizador de tigres y poner en verdadero
+		#la condición que evalúa si se está llevando a cabo el conteo.
 		if !is_tiger:
 			if !is_tiger_countdown:
 				tiger_timer.start()
@@ -250,31 +270,42 @@ func _process(_delta):
 	
 		
 
-		
+#FUNCIONES DE SELECCIONAR Y DESSELECCIONAR UNIDADES#		
 func _select_unit(unit):
 	if not selected_units.has(unit):
 		selected_units.append(unit)
-	#print("selected %s" % unit.name)
-	#create_buttons()
+	
 
 func _deselect_unit(unit):
 	if selected_units.has(unit):
 		selected_units.erase(unit)
 	
+	
+#CONTROL DEL MOUSE Y LAS UNIDADES
 func _unhandled_input(event):
+	#Si el jefe no está muerto...
 	if !is_warchief_dead:		
-		
+		#Si se mueve el mouse.
 		if event is InputEventMouseMotion:
+			#Si el ícono del mouse está en modo casa o centro cívico.
 			if house_mode || townhall_mode:
 				
+				#Agregar las casas como obstáculos.
 				for house in houses.get_children():
 					if !house in obstacles:
 						obstacles.append(house)
 						
+				#Agregar el centro cívico como obstáculo.
 				for a_townhall in townhall_node.get_children():
 					if !a_townhall in obstacles:
 						obstacles.append(a_townhall)
 				
+				#Agregar el lago y la cueva a los obstáculos.
+				obstacles.append(lake)
+				obstacles.append(cave)
+				
+				#Comprobar que el cursor no esté sobre un obstáculo, con mouse_entered
+				#o demasiado cerca de uno, con is_too_close.
 				for an_obstacle in obstacles:
 					if an_obstacle.mouse_entered:
 						is_mouse_entered=true
@@ -287,9 +318,11 @@ func _unhandled_input(event):
 						break
 					else:
 						is_too_close=false		
-		
+		#Si se presiona la tecla derecha.
 		if event.is_action_pressed("RightClick"):
+			#Si está en modo flecha.
 			if arrow_mode:
+				#Hacer formar a las unidades seleccionadas.
 				for i in range(0,selected_units.size()):
 					if i==0:
 						selected_units[i].target_position=get_global_mouse_position()
@@ -298,13 +331,19 @@ func _unhandled_input(event):
 							selected_units[i].target_position=Vector2(selected_units[0].target_position.x,selected_units[i-1].target_position.y+20)
 						else:
 							selected_units[i].target_position=Vector2(selected_units[i-1].target_position.x+20,selected_units[i-1].target_position.y)
+			#Si está en modo casa o centro cívico.
 			if house_mode || townhall_mode:
+				#Ponerlo en modo flecha.
 				_on_Game3_is_arrow()
+			#Si está en alguno de los modos de recolección...
 			if basket_mode || axe_mode || mattock_mode || hand_mode || claypot_mode:
+				#...dirigir las unidades seleccionadas hasta la posición del mouse.
 				for i in range(0,selected_units.size()):
 					selected_units[i].target_position=get_global_mouse_position()
 		
+		#Si se presiona la tecla izquierda del mouse.
 		if event is InputEventMouseButton && event.is_action_pressed("LeftClick"):
+			#Si está en modo casa o centro cívico, crear el edificio correspondiente.
 			if house_mode:
 				_create_house()
 				
@@ -312,7 +351,7 @@ func _unhandled_input(event):
 				_create_townhall()				
 			
 			if house_mode || townhall_mode:
-				#Enviar a los ciudadanos a construir el edificio.
+				#Enviar a los ciudadanos seleccionados a construir el edificio.
 				for citizen in units.get_children():
 					if citizen.selected:
 						citizen.firstPoint=citizen.global_position

@@ -36,8 +36,7 @@ onready var camera = tree.get_node("Camera")
 onready var all_timer = tree.get_node("all_timer")
 onready var tiger_timer = tree.get_node("tiger_timer")
 
-#Tilemap del escenario
-onready var tile_map = tree.get_node("TileMap")
+
 
 #Fuentes de recursos recogibles (pickables)
 onready var lake = tree.get_node("Lake")
