@@ -630,32 +630,37 @@ func _check_victory():
 		
 
 		
-	
+#Presionar el botón CreateCitizen. Comprueba que haya
+#los puntos de comida necesarios y de ser así, llama a la
+#función create_unit.	
 func _on_CreateCitizen_pressed():
 	if Globals.food_points>=15:
 		_create_unit(15)
 		
 
 
-
+#Señal timeout del tiger_timer. Hace visibles los tigres y los pone en estado 0
+#(ir al objetivo que se les dio al crearlos).
 func _on_tiger_timer_timeout():
 	for a_tiger in all_tigers:
 		if is_instance_valid(a_tiger):
 			a_tiger.visible=true
 			a_tiger.state=0
 
-		
+#Desseleccionar todas las unidades (al crear un rectángulo vacío).
 func _deselect_all():
 	while selected_units.size()>0:
 		selected_units[0]._set_selected(false)
-		
-func _select_last():
-	for unit in selected_units:
-		if selected_units[selected_units.size()-1] == unit:
-			unit._set_selected(true)
-		else:
-			unit._set_selected(false)
-		
+	
+#Seleccionar la última unidad seleccionada.	
+#func _select_last():
+#	for unit in selected_units:
+#		if selected_units[selected_units.size()-1] == unit:
+#			unit._set_selected(true)
+#		else:
+#			unit._set_selected(false)
+	
+#Comprobar cuáles unidades se encuentran dentro del rectángulo de selección.	
 func get_units_in_area(area):
 	var u=[]
 	for unit in all_units:
@@ -663,7 +668,8 @@ func get_units_in_area(area):
 			if unit.position.y>area[0].y and unit.position.y<area[1].y:
 				u.append(unit)
 	return u
-		
+	
+#Seleccionar las unidades dentro del rectángulo de selección.	
 func _area_selected(obj):
 	var start=obj.start
 	var end=obj.end
@@ -683,6 +689,9 @@ func _area_selected(obj):
 #		if un.selected:
 #			un.move_unit(obj.move_to_point)
 		
+######FUNCIONES DE SEÑALES DEL MODO DEL MOUSE######
+#(La acción varía según el modo del ícono).	
+#Señal de poner el cursor en modo flecha.
 func _on_Game3_is_arrow():
 	Input.set_custom_mouse_cursor(Globals.arrow)
 	arrow_mode=true
@@ -695,7 +704,7 @@ func _on_Game3_is_arrow():
 	house_mode=false
 	townhall_mode=false
 
-
+#Señal de poner el cursor en modo canasta.
 func _on_Game3_is_basket():
 	if !house_mode && !townhall_mode:
 		Input.set_custom_mouse_cursor(Globals.basket)
@@ -709,6 +718,7 @@ func _on_Game3_is_basket():
 		house_mode=false
 		townhall_mode=false
 	
+#Señal de poner el cursor en modo pico.
 func _on_Game3_is_pick_mattock():
 	if !house_mode && !townhall_mode:
 		Input.set_custom_mouse_cursor(Globals.pick_mattock)
@@ -722,6 +732,7 @@ func _on_Game3_is_pick_mattock():
 		house_mode=false
 		townhall_mode=false
 
+#Señal de poner el cursor en modo espada.
 func _on_Game3_is_sword():
 	if !house_mode && !townhall_mode:
 		Input.set_custom_mouse_cursor(Globals.sword)
@@ -735,6 +746,7 @@ func _on_Game3_is_sword():
 		house_mode=false
 		townhall_mode=false
 
+#Señal de poner el cursor en modo mano.
 func _on_Game3_is_hand():
 	if !house_mode && !townhall_mode:
 		Input.set_custom_mouse_cursor(Globals.hand)
@@ -748,7 +760,7 @@ func _on_Game3_is_hand():
 		house_mode=false
 		townhall_mode=false
 
-
+#Señal de poner el cursor en modo cuenco de barro.
 func _on_Game3_is_claypot():
 	if !house_mode && !townhall_mode:
 		Input.set_custom_mouse_cursor(Globals.claypot)
@@ -762,6 +774,7 @@ func _on_Game3_is_claypot():
 		house_mode=false
 		townhall_mode=false
 
+#Señal de poner el cursor en mmodo hacha.
 func _on_Game3_is_axe():
 	if !house_mode && !townhall_mode:
 		Input.set_custom_mouse_cursor(Globals.axe)
@@ -775,6 +788,7 @@ func _on_Game3_is_axe():
 		house_mode=false
 		townhall_mode=false
 	
+#Función de poner el cursor en mmodo casa.
 func _on_Game3_is_house():
 	if is_mouse_entered || is_too_close:
 		Input.set_custom_mouse_cursor(Globals.house_b)
@@ -790,7 +804,7 @@ func _on_Game3_is_house():
 	axe_mode=false
 	townhall_mode=false
 				
-	
+#Señal de poner el cursor en mmodo cetro cívico.	
 func _on_Game3_is_townhall():
 	if is_mouse_entered || is_too_close:
 		Input.set_custom_mouse_cursor(Globals.townhall_b)
@@ -807,7 +821,7 @@ func _on_Game3_is_townhall():
 	house_mode=false
 	
 				
-
+#Comprobar las unidades activas y las que murieron para saber si no hubo derrota.
 func _check_units():
 	for a_unit in all_units:
 		if a_unit.is_deleted && is_instance_valid(a_unit):
@@ -825,23 +839,30 @@ func _check_units():
 
 
 
-
+#Presionar el botón MakeWarchief para convertir una unidad civil en jefe guerrero.
 func _on_MakeWarchief_pressed():
+	#Sólo convierte la unidad seleccionada si es la única que está seleccionada.
+	#y muestra el mensaje correspondiente
 	if selected_units.size()==1:
 		selected_units[0].is_warchief=true
 		selected_units[0].warchief_mark.visible=true
 		create_warrior.visible=true
 		make_warchief.visible=false
 		prompts_label.text = "¡Ya tienes a tu jefe! Utilízalo para entrenar unidades militares\ncon el botón de crear unidad militar."
+	#Si hay más de una unidad seleccionada, muestra el mensaje de error.
 	elif selected_units.size()>1:
 		prompts_label.text = "Debes seleccionar una sola unidad."
+	#Muestra el mensaje de 'selecciona una unidad', si es que no hay ninguna seleccionada. 
 	elif selected_units.size()==0:
 		prompts_label.text = "Selecciona una unidad."
 
-
+#Presionar botón de crear guerrero, llama a la función _create_warrior_unit()
 func _on_CreateWarriorUnit_pressed():
 	_create_warrior_unit()
 
+
+#Comprobar mamuts. Si no queda ninguno, se habilita el botón de 'crear casa'
+#y se enuncia el nuevo objetivo en la etiqueta de instrucciones.
 func _check_mammoths():
 	var mammoths_count=0
 	
@@ -855,6 +876,8 @@ func _check_mammoths():
 		una casa cada cuatro civiles."""	
 		create_house.visible=true
 
+#Presionar botón crear casa. Pone el cursor en modo casa, si es que no estaba así
+#(ver _unhandled_input).
 func _on_CreateHouse_pressed():
 	if !house_mode:
 		_on_Game3_is_house()
@@ -862,46 +885,63 @@ func _on_CreateHouse_pressed():
 		_on_Game3_is_arrow()
 
 
-func _on_GiveAttackOrder_pressed():
-	pass # Replace with function body.
 
 
+#Presionar botón crear centro cívico. Pone el cursor en modo centro cívico, 
+#si es que no estaba así ya (ver _unhandled_input).
 func _on_CreateTownHall_pressed():
 	if !townhall_mode:
 		_on_Game3_is_townhall()
 	else:
 		_on_Game3_is_arrow()
-		
-func _update_path(new_obstacle):	
+	
+#Actualizar mapa de navegación.	
+func _update_path(new_obstacle):
+	#Ciudadanos	
 	var citizens=units.get_children()
+	#Variable para un ciudadano en particular, el primero seleccionado.
 	var the_citizen=null
+	#Construir un nuevo arreglo de vectores.
 	var new_polygon=PoolVector2Array()
+	#Tomar el obstáculo pasado como referencia y el polígono de colisión del mismo.
 	var col_polygon=new_obstacle.get_node("CollisionPolygon2D").get_polygon()
 	
+	#Cada vector en el polígono de colisión se añade a la posición del obstáculo
+	#dado como parámetro y se agrega al nuevo polígono.
 	for vector in col_polygon:
 		new_polygon.append(vector + new_obstacle.position)		
-		
+	
+	#Se toma el polígono de colisión del nodo nav2d.	
 	var navi_polygon=nav2d.get_node("polygon").get_navigation_polygon()
+	#Se le agrega como outline el nuevo polígono. 
 	navi_polygon.add_outline(new_polygon)
+	#Se invoca la función que hace que el polígono genere de nuevo todos sus
+	#polígonos del outline.
 	navi_polygon.make_polygons_from_outlines()	
 	
+	#Se toma el primer ciudadano seleccionado y se interrumpe el ciclo.
 	for citizen in citizens:
 		if citizen.selected:
 			the_citizen=citizen
 			break
 	
+	#A ese ciudadano se le genera el nuevo path.
 	if the_citizen!=null:	
 		var p = nav2d.get_simple_path(the_citizen.firstPoint,the_citizen.secondPoint,true)
 		path = Array(p)
 		path.invert()
 
+
+#####FUNCIÓN RECONSTRUIR NAVEGACIÓN####
 func _rebake_navigation():
+	#Deshabilitar el polígono de navegación.
 	nav2d.get_node("polygon").enabled=false
+	#Tomar el polígono de navegación y borrarle los outlines y los polígonos.
 	var navi_polygon=nav2d.get_node("polygon").get_navigation_polygon()
 	navi_polygon.clear_outlines()
 	navi_polygon.clear_polygons()
 	
-	#Agregar límite general y cueva.
+	#Agregar límite general.
 	navi_polygon.add_outline(PoolVector2Array([
 	Vector2(-1024,-608),
 	Vector2(1024,-608),
@@ -914,49 +954,58 @@ func _rebake_navigation():
 	#Agregar cueva.
 	_update_path(cave)
 		
+	#Agregar las casas.
 	for a_house in houses.get_children():
 		if is_instance_valid(a_house):
 			_update_path(a_house)
-			
+	
+	#Agregar el centro cívico.	
 	for a_townhall in townhall_node.get_children():
 		if is_instance_valid(a_townhall):
 			_update_path(a_townhall)
 		
 	
-		
-	navi_polygon.make_polygons_from_outlines()	
+	#Crear polígonos desde los outlines.	
+	navi_polygon.make_polygons_from_outlines()
+	#Volver a habilitar el polígono de navegación.	
 	nav2d.get_node("polygon").enabled=true
 	
 
 	
-	
+#Controlar los modos del mouse para casa y centro cívico.	
 func _check_mouse_modes():
 	if house_mode:
 		_on_Game3_is_house()
 	if townhall_mode:
 		_on_Game3_is_townhall()
 
-
+########CAJAS DE DIÁLOGO PERSONALIZADAS#####
+#Caja de salir.
 func _on_ExitConfirmation_confirmed():
 	$UI.remove_child(Globals.settings)
+	Globals._clear_globals()
 	Globals.go_to_scene("res://Scenes/Menu/Menu.tscn")
 
-
+#Caja de volver a jugar
 func _on_ReplayOk_pressed():
 	$UI.remove_child(Globals.settings)
 	Globals.go_to_scene("res://Scenes/Game3/Game3.tscn")
 
-
+#Mostrar caja de salir, si no se elige volver a jugar.
 func _on_ReplayCancel_pressed():
 	exit_confirmation.popup()
 	exit_confirmation.get_ok().text="Aceptar"
 	exit_confirmation.get_cancel().text="Cancelar"
 
 
+#Caja de ir a la siguiente fase, en caso de victoria.
 func _on_NextSceneOk_pressed():
+	#Guardar en Globals.houses_p la posición de cada una de las casas creadas.
 	for house in houses.get_children():
 		Globals.houses_p.append(house.position)
+	#Guardar Globals.townhall_p la posición del centro cívico.
 	Globals.townhall_p=townhall_node.get_child(0).position
+	#Guardar el índice del ciudadano que fue transformado en jefe.
 	var child_index=0
 	for citizen in units.get_children():
 		if citizen.is_warchief:
@@ -964,10 +1013,14 @@ func _on_NextSceneOk_pressed():
 			break
 		else:
 			child_index+=1
+			
+	#Remover Globals.settings como hijo de la UI.
 	$UI.remove_child(Globals.settings)
+	
+	#Ir a la pantalla de intervalo 3.
 	Globals.go_to_scene("res://Scenes/Intermissions/Intermission3.tscn")
 
-
+#Mostrar la pantalla de configuración, si presionamos el botón settings.
 func _on_Settings_pressed():
 	Globals.settings.visible=true
 

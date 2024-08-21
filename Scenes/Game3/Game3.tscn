@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=2]
+[gd_scene load_steps=36 format=2]
 
 [ext_resource path="res://Scenes/Cave/Cave.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Unit2/Unit2.tscn" type="PackedScene" id=2]
@@ -19,9 +19,7 @@
 [ext_resource path="res://Scenes/Game2/watericon.png" type="Texture" id=17]
 [ext_resource path="res://Scenes/Game2/puddle.png" type="Texture" id=18]
 [ext_resource path="res://Scenes/MouseIcons/house_small.png" type="Texture" id=19]
-[ext_resource path="res://Scenes/Game2/claypot.png" type="Texture" id=20]
 [ext_resource path="res://Scenes/Game2/woodicon.png" type="Texture" id=21]
-[ext_resource path="res://Scenes/Game2/agro.png" type="Texture" id=22]
 [ext_resource path="res://Scenes/Game2/plant.png" type="Texture" id=23]
 [ext_resource path="res://Scenes/Game2/quarry.png" type="Texture" id=24]
 [ext_resource path="res://Scenes/Game2/food.png" type="Texture" id=25]
@@ -422,24 +420,6 @@ Costo: madera, 80 ptos, hojas, 90 ptos,
 arcilla, 100 ptos."
 texture_normal = ExtResource( 30 )
 
-[node name="GiveAttackOrder" type="TextureButton" parent="UI/Base/Rectangle"]
-visible = false
-margin_left = 946.0
-margin_top = 25.0001
-margin_right = 959.0
-margin_bottom = 49.0001
-hint_tooltip = "Cuenco de barro: primer gran hito en alfarería. No podrás recolectar agua sin él. Costo: 85 ptos. lodo."
-texture_normal = ExtResource( 20 )
-
-[node name="DevelopAgriculture" type="TextureButton" parent="UI/Base/Rectangle"]
-visible = false
-margin_left = 975.0
-margin_top = 25.0001
-margin_right = 988.0
-margin_bottom = 49.0001
-hint_tooltip = "Desarrollar agricultura: Una forma constante y dinámica de proveer alimentos. Costo: 70 ptos. agua, 70 ptos alimentos, 70 ptos. hojas."
-texture_normal = ExtResource( 22 )
-
 [node name="DevelopmentsLabel" type="Label" parent="UI/Base/Rectangle"]
 margin_left = 850.0
 margin_top = 7.0
@@ -614,7 +594,6 @@ autostart = true
 [connection signal="pressed" from="UI/Base/Rectangle/CreateWarriorUnit" to="." method="_on_CreateWarriorUnit_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateHouse" to="." method="_on_CreateHouse_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateTownHall" to="." method="_on_CreateTownHall_pressed"]
-[connection signal="pressed" from="UI/Base/Rectangle/GiveAttackOrder" to="." method="_on_GiveAttackOrder_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/MakeWarchief" to="." method="_on_MakeWarchief_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/ReplayConfirmation/ReplayOk" to="." method="_on_ReplayOk_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/ReplayConfirmation/ReplayCancel" to="." method="_on_ReplayCancel_pressed"]
