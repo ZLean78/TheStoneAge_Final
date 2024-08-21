@@ -157,6 +157,11 @@ var touching_enemy
 var row=0
 var column=0
 
+#Variables para crear las unidades civiles en formación.
+var unit_row=0
+var unit_column=0
+
+
 func _ready():
 	#Seleccionar y reproducir la música con el autoload AudioPlayer.
 	AudioPlayer._select_music()
@@ -369,43 +374,67 @@ func _unhandled_input(event):
 				#Ponemos el cursor en modo flecha para cancelar la construcción de una casa.
 				_on_Game3_is_arrow()
 			else:
+				#Si han muerto todas las unidades y no tenemos más recursos
+				#para crear nuevas, aparece la caja de "volver a jugar".
 				if(all_units.size()==0 && Globals.food_points<15) || is_warchief_dead:
 					replay_confirmation.visible=true
 				else:
+					#Si estamos en medio de una partida, aparece el menú de opciones.
 					$UI/Base/Rectangle/OptionsMenu.visible=!$UI/Base/Rectangle/OptionsMenu.visible
 		
 	
-
+######FUNCIÓN CREAR CENTRO CÍVICO####
 func _create_townhall():
+	#Crear una variable ciudadanos, para controlar las unidades del jugador,
+	#una variable para representar un ciudadano en particular entre los seleccionados,
+	#que es el que va a iniciar la construcción del edificio
+	#y el edificio propiamente dicho.
 	var citizens=units.get_children()
 	var the_citizen=null
 	var the_townhall=null
 	
+	#Identificar el ciudadano que va a iniciar la construcción del edificio.
 	for citizen in citizens:
 		if citizen.selected:
 			the_citizen=citizen
 	
+	#Si el ciudadano específico the_citizen no es null
 	if the_citizen!=null:
+		#y si se cuenta con los recursos requeridos para construir el edificio,
+		#se crea el edificio.
 		if Globals.wood_points>=80 && Globals.leaves_points>=90 && Globals.clay_points>=100 && !is_mouse_entered && !is_too_close:					
+			#Crear la variable en la que se va a almacenar el nuevo edificio
+			#y crear en ella el centro cívico
 			var new_townhall=TownHall.instance()
+			#Se le establece un máximo de buena condición (barra de energía) de 80.
 			new_townhall.condition_max=80
-			#the_citizen.agent.set_target_location(get_global_mouse_position())
+			
+			#Se lo sitúa donde el usuario hace clic, con el ícono del mouse
+			#en modo con la forma del edificio.
 			new_townhall.position = get_global_mouse_position()
+			#Se lo agrega al nodo correspondiente al centro cívico.
 			townhall_node.add_child(new_townhall)
+			#Enviar al ciudadano encargado de iniciar la construcción
+			#al lugar donde se ha creado para que le cargue la barra de buena condición.
 			if the_citizen.position.x < new_townhall.position.x:
 				#Si el nuevo centro cívico está a la derecha.
 				the_citizen.target_position=Vector2(new_townhall.position.x-125,new_townhall.position.y)
 			else:
 				#Si el nuevo centro cívico está a la izquierda.
 				the_citizen.target_position=Vector2(new_townhall.position.x+125,new_townhall.position.y)
+			#Asignar a la variable the_townhall el nuevo centro cívico en new_townhall.
 			the_townhall=new_townhall
+			#Restar los recursos que fueron necesarios del inventario.
 			Globals.wood_points-=80
 			Globals.leaves_points-=90
 			Globals.clay_points-=100
-			print("Se construyó un centro cívico.")
+			
 			#Actualizamos el mapa de navegación con el nuevo centro cívico.
 			_rebake_navigation()
 	
+	#Si el nuevo centro cívico no es nulo (se ha creado),
+	#y si hay otros ciudadanos seleccionados, aparte de the_citizen,
+	#enviarlos también a construir el edificio.
 	if the_townhall!=null:
 		for citizen in citizens:
 			if citizen.selected && citizen!=the_citizen:
@@ -490,7 +519,9 @@ func _create_house():
 					#Si la nueva casa está a la izquierda.
 					citizen.target_position=Vector2(the_house.position.x+30,the_house.position.y)
 	
-
+#####FUNCIÓN CHECK HOUSES#####
+#Comprueba si ya han sido creadas las cuatro casas necesarias
+#para habilitar la construcción del centro cívico.
 func _check_houses():
 	var dwells=houses.get_children()
 	var dwell_count=0	
@@ -501,44 +532,80 @@ func _check_houses():
 	if dwell_count>=4:
 		prompts_label.text="Crea un centro cívico."
 		create_townhall.visible=true	
-	
+
+######FUNCIÓN DE CREAR UNIDAD CIVIL#####	
 func _create_unit(cost = 0):
+	#Crear la variable new_Unit y asignarle la nueva unidad.
 	var new_Unit = Unit2.instance()
+	#Sumar uno al contador de unidades.
 	unit_count+=1
+	#Si el número es par, será una mujer. Si no, será hombre.
 	if(unit_count%2==0):
 		new_Unit.is_girl=true
 	else:
 		new_Unit.is_girl=false
+	#Si el grupo ya tiene ropa, también la tendrá la nueva unidad.
 	if(Globals.group_dressed):
 		new_Unit.is_dressed=true	
+	#Si el grupo ya tiene bolsa de recolección, también la tendrá la nueva unidad.
 	if(Globals.group_has_bag):
 		new_Unit.has_bag=true	
 		new_Unit.get_child(3).visible = true
+	#Restar los puntos de comida necesarios para crear una unidad.
 	Globals.food_points -= cost
+	#Determinar a partir de la posición unit_position
+	#dónde situar la nueva unidad.
 	new_Unit.position = spawn_position.position
 	for unit in units.get_children():
 		if new_Unit.position==unit.position:
-			new_Unit.position+=Vector2(20,20)		
-	units.add_child(new_Unit)
-	all_units.append(new_Unit)
-		
-func _create_warrior_unit(cost = 0):
-	var new_Unit = Unit2.instance()
-	unit_count+=1
-	new_Unit.position = Vector2(camera.position.x+rand_range(50,100),camera.position.y+rand_range(50,100))
-	if(unit_count%2==0):
-		new_Unit.is_girl=true
-	else:
-		new_Unit.is_girl=false
-	if(Globals.group_dressed):
-		new_Unit.is_dressed=true	
-	if(Globals.group_has_bag):
-		new_Unit.has_bag=true	
-		new_Unit.get_child(3).visible = true
-	Globals.food_points -= cost
-	units.add_child(new_Unit)
-	all_units.append(new_Unit)
+			unit_column+=1
 			
+		if unit_column==10:
+			unit_column=0
+			unit_row+=1
+		new_Unit.position=spawn_position.position+Vector2(20*unit_column,20*unit_row)		
+	
+	#Agregar el nuevo ciudadano al nodo units y all arreglo all_units.
+	units.add_child(new_Unit)
+	all_units.append(new_Unit)
+
+######FUNCIÓN DE CREAR UNIDAD GUERRERO#####
+func _create_warrior_unit():
+	#Poner en 0 el contador de guerreros.
+	var warriors_count=0
+	#Comprobar que se tengan los recursos necesarios y de ser así, crear el nuevo guerrero.
+	if Globals.food_points>=30 && Globals.wood_points>=20 && Globals.stone_points>=10:
+		var new_warrior = Warrior.instance()
+		#Posicionar el nuevo guerrero según la posición spawn_position
+		#y las variables column y row.
+		new_warrior.position = spawn_position.position
+		for warrior in warriors.get_children():
+			warriors_count+=1				
+			if new_warrior.position == warrior.position:
+				column+=1
+			
+			if column==10:
+				column=0
+				row+=1
+			new_warrior.position=spawn_position.position+Vector2(20*column,20*row)
+		
+		#Añadir el nuevo guerrero al nodo warriors y al arreglo all_units.
+		warriors.add_child(new_warrior)
+		all_units.append(new_warrior)
+		#Restar los recursos correspondientes.
+		Globals.food_points-=30
+		Globals.wood_points-=20
+		Globals.stone_points-=10
+		
+	#Cambiar el mensaje en la etiqueta de instrucciones cuando se tenga tres
+	#guerreros o más.
+	if warriors_count>=3:
+		prompts_label.text="Cuando consideres que tienes suficientes guerreros,\nenvíalos a pelear contra los mamuts,\nal noroeste del lago."
+	
+#####FUNCIÓN CHECK VICTORY####
+#Para comprobar victoria o derrota, según se haya logrado construir
+#el centro cívico, hayan perecido todas las unidades
+#y no existan recursos para crear nuevas, o el jefe haya muerto.		
 func _check_victory():
 	for child in townhall_node.get_children():
 		if "TownHall" in child.name:
@@ -773,28 +840,7 @@ func _on_MakeWarchief_pressed():
 
 
 func _on_CreateWarriorUnit_pressed():
-	var warriors_count=0
-	if Globals.food_points>=30 && Globals.wood_points>=20 && Globals.stone_points>=10:
-		var new_warrior = Warrior.instance()
-		new_warrior.position = spawn_position.position
-		for warrior in warriors.get_children():
-			warriors_count+=1				
-			if new_warrior.position == warrior.position:
-				column+=1
-			#if new_warrior.position.x>cave.position.x:
-			if column==10:
-				column=0
-				row+=1
-			new_warrior.position=spawn_position.position+Vector2(20*column,20*row)
-		
-		warriors.add_child(new_warrior)
-		all_units.append(new_warrior)
-		Globals.food_points-=30
-		Globals.wood_points-=20
-		Globals.stone_points-=10
-	
-	if warriors_count>=3:
-		prompts_label.text="Cuando consideres que tienes suficientes guerreros,\nenvíalos a pelear contra los mamuts,\nal noroeste del lago."
+	_create_warrior_unit()
 
 func _check_mammoths():
 	var mammoths_count=0
