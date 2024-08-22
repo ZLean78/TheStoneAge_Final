@@ -160,9 +160,6 @@ position = Vector2( 716, 418 )
 [node name="EnemySpawn" type="Position2D" parent="."]
 position = Vector2( -985, -558 )
 
-[node name="TigerTarget" type="Position2D" parent="."]
-position = Vector2( 496, 365 )
-
 [node name="Houses" type="Node2D" parent="."]
 
 [node name="House" parent="Houses" instance=ExtResource( 29 )]
@@ -210,8 +207,6 @@ position = Vector2( 719, 387 )
 z_as_relative = false
 
 [node name="EnemyWarriors" type="YSort" parent="."]
-
-[node name="EnemyCitizens" type="YSort" parent="."]
 
 [node name="Tigers" type="Node2D" parent="."]
 z_as_relative = false
@@ -302,7 +297,8 @@ navpoly = SubResource( 3 )
 [node name="SelectDraw" type="Node2D" parent="."]
 script = ExtResource( 3 )
 
-[node name="food_timer" type="Timer" parent="."]
+[node name="all_timer" type="Timer" parent="."]
+autostart = true
 
 [node name="enemy_timer" type="Timer" parent="."]
 autostart = true
@@ -721,6 +717,7 @@ text = "Siguiente Escena"
 [connection signal="is_pick_mattock" from="." to="." method="_on_Game4_is_pick_mattock"]
 [connection signal="is_sword" from="." to="." method="_on_Game4_is_sword"]
 [connection signal="remove_building" from="." to="." method="_on_Game4_remove_building"]
+[connection signal="timeout" from="all_timer" to="." method="_on_all_timer_timeout"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateCitizen" to="." method="_on_CreateCitizen_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateWarriorUnit" to="." method="_on_CreateWarriorUnit_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/DevelopPottery" to="." method="_on_DevelopPottery_pressed"]

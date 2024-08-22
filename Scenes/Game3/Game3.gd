@@ -1069,38 +1069,3 @@ func _on_all_timer_timeout():
 							
 					
 						
-						
-#	if body_entered!=null && is_instance_valid(body_entered):
-#		_get_damage(body_entered)
-#
-#
-#		if is_warchief:
-#
-#			if timer_count>3:
-#				can_heal_another=true
-#
-#			if health<MAX_HEALTH && heal_counter>0:
-#				heal_counter-=1
-#				if heal_counter<=0:
-#					can_heal_itself=true
-#
-#
-#			if can_heal_itself && timer_count>3:
-#				self_heal()
-#
-##			if can_heal_another:
-##				if "Unit" in body_entered.name || "Warrior" in body_entered.name && !("Enemy" in body_entered.name):
-##					heal(body_entered)
-#
-#
-#	if pickable!=null:
-#		_collect_pickable(pickable)
-#
-#
-#	if timer_count>3:
-#		can_shoot=true
-#
-#
-#	if timer_count>4:
-#		timer_count=0
-	
