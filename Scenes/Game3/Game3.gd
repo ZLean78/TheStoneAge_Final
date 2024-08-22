@@ -29,7 +29,7 @@ onready var wood_label = tree.get_node("UI/Base/Rectangle/WoodLabel")
 onready var water_label = tree.get_node("UI/Base/Rectangle/WaterLabel")
 
 #Botones
-onready var give_attack_order = tree.get_node("UI/Base/Rectangle/GiveAttackOrder")
+
 onready var make_warchief = tree.get_node("UI/Base/Rectangle/MakeWarchief")
 onready var create_house = tree.get_node("UI/Base/Rectangle/CreateHouse")
 onready var create_townhall = tree.get_node("UI/Base/Rectangle/CreateTownHall")
@@ -45,6 +45,7 @@ onready var tiger_timer = tree.get_node("tiger_timer")
 
 #########FUENTES DE RECURSOS RECOLECTABLES##########
 ####QUE SON HIJAS DEL TILEMAP#######
+onready var cave = tree.get_node("TileMap/Cave")
 onready var puddle = tree.get_node("TileMap/Puddle")
 onready var quarry1 = tree.get_node("TileMap/Quarry1")
 onready var quarry2 = tree.get_node("TileMap/Quarry2")
@@ -70,7 +71,7 @@ onready var nav2d = $nav
 onready var townhall_node=$TownHall
 onready var tigers=$Tigers
 onready var mammoths=$Mammoths
-onready var quarries=$Quarries
+
 
 ###CAJAS DE DIÁLOGO POPUPS PERSONALIZADAS####
 onready var next_scene_confirmation = $UI/Base/Rectangle/NextSceneConfirmation
@@ -80,8 +81,7 @@ onready var replay_confirmation=$UI/Base/Rectangle/ReplayConfirmation
 #Arreglo del path de las unidades del jugador.
 var path=[]
 
-#Cueva
-var cave
+
 
 #####ESCENAS PRECARGADAS DE ENTIDADES####
 export (PackedScene) var Unit2
@@ -653,12 +653,12 @@ func _deselect_all():
 		selected_units[0]._set_selected(false)
 	
 #Seleccionar la última unidad seleccionada.	
-#func _select_last():
-#	for unit in selected_units:
-#		if selected_units[selected_units.size()-1] == unit:
-#			unit._set_selected(true)
-#		else:
-#			unit._set_selected(false)
+func _select_last():
+	for unit in selected_units:
+		if selected_units[selected_units.size()-1] == unit:
+			unit._set_selected(true)
+		else:
+			unit._set_selected(false)
 	
 #Comprobar cuáles unidades se encuentran dentro del rectángulo de selección.	
 func get_units_in_area(area):
@@ -1033,3 +1033,74 @@ func _on_Quit_pressed():
 
 func _on_Back_pressed():
 	$UI/Base/Rectangle/OptionsMenu.visible=false
+
+
+func _on_all_timer_timeout():
+	#Interacción de cada unidad con las fuentes de recursos
+	#y los animales enemigos.
+	for a_unit in all_units:
+		#Incrementar contador para activar ciertas propiedades en la unidad.
+		a_unit.timer_count+=1
+		if is_instance_valid(a_unit) && "Unit" in a_unit.name && !("Enemy" in a_unit.name):
+			if a_unit.pickable!=null:
+				a_unit._collect_pickable(a_unit.pickable)
+				
+			if a_unit.is_warchief:
+				if a_unit.timer_count>3:
+					a_unit.can_heal_another=true
+				
+				if a_unit.health<a_unit.MAX_HEALTH && a_unit.heal_counter>0:
+					a_unit.heal_counter-=1
+					if a_unit.heal_counter<=0:
+						a_unit.can_heal_itself=true
+					
+				if a_unit.can_heal_itself:
+					a_unit.self_heal()
+				
+			if a_unit.body_entered!=null && is_instance_valid(a_unit.body_entered):
+				if "Tiger" in a_unit.body_entered.name || "Mammoth" in a_unit.body_entered.name:
+					a_unit._get_damage(a_unit.body_entered)
+					
+					
+				if a_unit.is_warchief:
+					if a_unit.can_heal_another:
+						if "Unit" in a_unit.body_entered.name || "Warrior" in a_unit.body_entered.name && !("Enemy" in a_unit.body_entered.name):
+							a_unit.heal(a_unit.body_entered)
+							
+					
+						
+						
+#	if body_entered!=null && is_instance_valid(body_entered):
+#		_get_damage(body_entered)
+#
+#
+#		if is_warchief:
+#
+#			if timer_count>3:
+#				can_heal_another=true
+#
+#			if health<MAX_HEALTH && heal_counter>0:
+#				heal_counter-=1
+#				if heal_counter<=0:
+#					can_heal_itself=true
+#
+#
+#			if can_heal_itself && timer_count>3:
+#				self_heal()
+#
+##			if can_heal_another:
+##				if "Unit" in body_entered.name || "Warrior" in body_entered.name && !("Enemy" in body_entered.name):
+##					heal(body_entered)
+#
+#
+#	if pickable!=null:
+#		_collect_pickable(pickable)
+#
+#
+#	if timer_count>3:
+#		can_shoot=true
+#
+#
+#	if timer_count>4:
+#		timer_count=0
+	

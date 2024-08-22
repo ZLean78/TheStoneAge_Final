@@ -196,6 +196,7 @@ wait_time = 40.0
 one_shot = true
 
 [node name="all_timer" type="Timer" parent="."]
+autostart = true
 
 [node name="FruitTrees" type="Node2D" parent="."]
 
@@ -590,6 +591,7 @@ autostart = true
 [connection signal="is_pick_mattock" from="." to="." method="_on_Game3_is_pick_mattock"]
 [connection signal="is_sword" from="." to="." method="_on_Game3_is_sword"]
 [connection signal="timeout" from="tiger_timer" to="." method="_on_tiger_timer_timeout"]
+[connection signal="timeout" from="all_timer" to="." method="_on_all_timer_timeout"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateCitizen" to="." method="_on_CreateCitizen_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateWarriorUnit" to="." method="_on_CreateWarriorUnit_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateHouse" to="." method="_on_CreateHouse_pressed"]
