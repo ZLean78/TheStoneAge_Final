@@ -81,8 +81,8 @@ onready var units = $Units
 onready var warriors = $Warriors
 #Unidades militares enemigas
 onready var enemy_warriors_node=$EnemyWarriors
-#Unidades civiles enemigas #No va
-#onready var enemy_citizens_node=$EnemyCitizens
+#Unidades civiles enemigas 
+onready var enemy_citizens_node=$EnemyCitizens
 
 #Casas
 onready var houses = $Houses

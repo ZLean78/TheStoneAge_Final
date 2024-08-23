@@ -12,7 +12,7 @@ onready var puddle_node
 
 
 #Temporizador de comida, agrega un punto de comida por segundo cuando la unidad toca un árbol frutal.
-onready var food_timer
+onready var all_timer
 
 #Marca de jefe guerrero.
 onready var warchief_mark= $WarchiefMark
@@ -149,7 +149,7 @@ var is_timer_timeout=false
 func _ready():
 	AI_state=1
 	tree=Globals.current_scene
-	food_timer=tree.food_timer
+	all_timer=tree.all_timer
 	fruit_trees_node=tree.get_node("FruitTrees")
 	pine_trees_node=tree.get_node("PineTrees")
 	plants_node=tree.get_node("Plants")
