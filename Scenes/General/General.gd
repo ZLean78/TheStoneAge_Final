@@ -9,6 +9,4 @@ func _ready():
 	general_mark=warchief_mark
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+

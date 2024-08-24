@@ -1621,3 +1621,11 @@ func _on_all_timer_timeout():
 					if a_unit.can_heal_another:
 						if "Unit" in a_unit.body_entered.name || "Warrior" in a_unit.body_entered.name && !("Enemy" in a_unit.body_entered.name):
 							a_unit.heal(a_unit.body_entered)
+			
+			if "General" in a_unit.name:
+				if a_unit.timer_count>3:
+					a_unit.can_heal_another=true
+				if a_unit.body_entered!=null && is_instance_valid(a_unit.body_entered):
+					if a_unit.can_heal_another:
+						if "Unit" in a_unit.body_entered.name || "Warrior" in a_unit.body_entered.name && !("Enemy" in a_unit.body_entered.name):
+							a_unit.heal(a_unit.body_entered)
