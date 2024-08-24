@@ -10,7 +10,7 @@ var is_warchief_dead = false
 
 
 onready var tree = Globals.current_scene
-onready var food_timer = tree.get_node("food_timer")
+onready var all_timer = tree.get_node("all_timer")
 onready var enemy_timer = tree.get_node("enemy_timer")
 onready var timer_label = tree.get_node("UI/Base/TimerLabel")
 onready var state_label = tree.get_node("UI/Base/StateLabel")
@@ -45,6 +45,7 @@ onready var spawn_position = $SpawnPosition
 onready var enemy_spawn = $EnemySpawn
 onready var units = $Units
 onready var warriors = $Warriors
+onready var generals = $Generals
 onready var vehicles = $Vehicles
 onready var enemy_vehicles=$EnemyVehicles
 onready var houses = $Houses
@@ -53,6 +54,7 @@ onready var fort_node = $Fort
 onready var tower_node = $Towers
 onready var barn_node = $Barn
 onready var enemy_fort_node = $EnemyFort
+
 onready var enemy_townhall_node = $EnemyTownhall
 onready var enemy_townhall=$EnemyTownhall/EnemyTownhall
 onready var enemy_fort_spawn = $EnemyFortSpawn
@@ -248,7 +250,8 @@ func _ready():
 	#en la línea 176. 
 	for i in range(0,11):
 		_create_unit();
-	
+	for a_general in generals.get_children(): 
+		all_units.append(a_general)
 	
 	
 	#Formación de las unidades.
@@ -670,6 +673,8 @@ func _create_tower():
 			Globals.stone_points-=100
 			Globals.wood_points-=80
 			Globals.leaves_points-=20
+			
+			Globals.towers_p.append(new_tower.position)
 			#Mensaje de comprobación para la consola.
 			print("Se construyó una torre.")
 	
@@ -1424,7 +1429,7 @@ func _on_DevelopMetals_pressed():
 		Globals.is_metals_developed=true
 		#develop_metals.visible=false
 		#Ataque enemigo por mejora.
-		if tree.name=="Game4" && !victory_obtained:
+		if tree.name=="Game5" && !victory_obtained:
 			_make_attack()
 		
 		
@@ -1458,18 +1463,11 @@ func _rebake_navigation():
 		if is_instance_valid(a_house):
 			_update_path(a_house)
 			
-	for enemy_house in enemy_houses.get_children():
-		if is_instance_valid(enemy_house):
-			_update_path(enemy_house)
-			
+				
 	for a_townhall in townhall_node.get_children():
 		if is_instance_valid(a_townhall):
 			_update_path(a_townhall)
 			
-	for enemy_townhall in enemy_townhall_node.get_children():
-		if is_instance_valid(enemy_townhall):
-			_update_path(enemy_townhall)
-		
 	for a_tower in tower_node.get_children():
 		if is_instance_valid(a_tower):
 			_update_path(a_tower)
@@ -1482,24 +1480,24 @@ func _rebake_navigation():
 		if is_instance_valid(a_fort):
 			_update_path(a_fort)
 			
-	for enemy_fort in enemy_fort_node.get_children():
-		if is_instance_valid(enemy_fort):
-			_update_path(enemy_fort)
 			
 	for enemy_house in enemy_houses.get_children():
 		if is_instance_valid(enemy_house):
 			_update_path(enemy_house)
+	
+	for an_enemy_townhall in enemy_townhall_node.get_children():		
+		if is_instance_valid(enemy_townhall):
+			_update_path(enemy_townhall)
 			
 	
 		
-	navi_polygon.make_polygons_from_outlines()	
+	
 	nav2d.get_node("polygon").enabled=true
 	
 
 
 
-func _on_Game4_remove_building():
-	_rebake_navigation()
+
 
 
 
@@ -1590,3 +1588,36 @@ func _on_BuildCatapult_pressed():
 		all_units.append(new_vehicle)
 		new_vehicle.position=Vector2(fort_node.get_child(0).position.x,fort_node.get_child(0).position.y+100)
 		
+
+
+func _on_all_timer_timeout():
+	#Interacción de cada unidad con las fuentes de recursos
+	#y los enemigos.
+	for a_unit in all_units:
+		#Incrementar contador para activar ciertas propiedades en la unidad.
+		a_unit.timer_count+=1
+		if is_instance_valid(a_unit) && "Unit" in a_unit.name || "General" in a_unit.name && !("Enemy" in a_unit.name):
+			if a_unit.pickable!=null:
+				a_unit._collect_pickable(a_unit.pickable)
+				
+			if a_unit.is_warchief:
+				if a_unit.timer_count>3:
+					a_unit.can_heal_another=true
+				
+				if a_unit.health<a_unit.MAX_HEALTH && a_unit.heal_counter>0:
+					a_unit.heal_counter-=1
+					if a_unit.heal_counter<=0:
+						a_unit.can_heal_itself=true
+					
+				if a_unit.can_heal_itself:
+					a_unit.self_heal()
+				
+			if a_unit.body_entered!=null && is_instance_valid(a_unit.body_entered):
+				if "Tiger" in a_unit.body_entered.name || "Mammoth" in a_unit.body_entered.name:
+					a_unit._get_damage(a_unit.body_entered)
+					
+					
+				if a_unit.is_warchief:
+					if a_unit.can_heal_another:
+						if "Unit" in a_unit.body_entered.name || "Warrior" in a_unit.body_entered.name && !("Enemy" in a_unit.body_entered.name):
+							a_unit.heal(a_unit.body_entered)

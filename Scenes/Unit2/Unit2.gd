@@ -125,6 +125,7 @@ var heal_timer=null
 var pickable_timer=null
 
 func _ready():
+	
 	heal_timer=Timer.new()
 	heal_timer.set("wait_time",1)
 	heal_timer.set("one_shot",true)

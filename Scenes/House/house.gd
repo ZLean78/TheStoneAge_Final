@@ -7,7 +7,6 @@ onready var tree
 onready var units
 onready var timer=$Timer
 onready var polygon=$CollisionPolygon2D
-#onready var all_timer=get_tree().root.get_child(0).get_node("food_timer")
 onready var bar=$Bar
 var mouse_entered=false
 

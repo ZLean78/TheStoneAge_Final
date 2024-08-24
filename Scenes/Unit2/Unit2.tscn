@@ -13,7 +13,7 @@
 
 [sub_resource type="CanvasItemMaterial" id=7]
 
-[sub_resource type="Shader" id=5]
+[sub_resource type="Shader" id=9]
 code = "shader_type canvas_item;
 render_mode blend_mix;
 
@@ -24,7 +24,7 @@ void fragment(){
 }"
 
 [sub_resource type="ShaderMaterial" id=6]
-shader = SubResource( 5 )
+shader = SubResource( 9 )
 
 [sub_resource type="SpriteFrames" id=3]
 animations = [ {

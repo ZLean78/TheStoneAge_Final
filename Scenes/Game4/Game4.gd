@@ -1583,7 +1583,7 @@ func _on_Back_pressed():
 
 func _on_all_timer_timeout():
 	#Interacción de cada unidad con las fuentes de recursos
-	#y los animales enemigos.
+	#y los enemigos.
 	for a_unit in all_units:
 		#Incrementar contador para activar ciertas propiedades en la unidad.
 		a_unit.timer_count+=1
