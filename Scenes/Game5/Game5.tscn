@@ -112,6 +112,7 @@ shader = SubResource( 14 )
 script = ExtResource( 38 )
 Unit2 = ExtResource( 1 )
 Warrior = ExtResource( 6 )
+General = ExtResource( 41 )
 House = ExtResource( 16 )
 TownHall = ExtResource( 13 )
 Fort = ExtResource( 2 )
@@ -668,7 +669,6 @@ margin_bottom = 44.0
 text = "Opciones"
 
 [node name="Back" type="Button" parent="UI/Base/Rectangle/OptionsMenu"]
-visible = false
 margin_left = 10.0
 margin_top = 49.0
 margin_right = 83.0
@@ -816,6 +816,7 @@ text = "Siguiente Escena"
 [connection signal="timeout" from="all_timer" to="." method="_on_all_timer_timeout"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateCitizen" to="." method="_on_CreateCitizen_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateWarriorUnit" to="." method="_on_CreateWarriorUnit_pressed"]
+[connection signal="pressed" from="UI/Base/Rectangle/CreateGeneral" to="." method="_on_CreateGeneral_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/BuildCatapult" to="." method="_on_BuildCatapult_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/CreateHouse" to="." method="_on_CreateHouse_pressed"]
 [connection signal="pressed" from="UI/Base/Rectangle/BuildBarn" to="." method="_on_BuildBarn_pressed"]

@@ -76,6 +76,7 @@ var cave
 #Escenas a instanciar (ciudadano, guerrero y cazador, casa, centro cívico).
 export (PackedScene) var Unit2
 export (PackedScene) var Warrior
+export (PackedScene) var General
 export (PackedScene) var House
 export (PackedScene) var TownHall
 export (PackedScene) var Fort
@@ -880,23 +881,69 @@ func _create_unit(cost = 0):
 	units.add_child(new_Unit)
 	#Agregamos la unidad al arreglo all_units.
 	all_units.append(new_Unit)
+	
+func _create_general():
+	#Creamos un nuevo contador de guerreros.
+	#var warriors_count=0
+	#Si tenemos al menos 30 puntos de comida,
+	#20 de madera y 10 de piedra.
+	if Globals.food_points>=50 && Globals.wood_points>=40 && Globals.stone_points>=30:
+		#Instanciamos el nuevo guerrero.
+		var new_general = General.instance()
+		#Situamos el guerrero en la posición spawn_position.
+		new_general.position = spawn_position.position
+		#Ordenamos los generales en filas de 10 unidades (10 columnas),
+		#en espacios de 20x20.
+		for general in generals.get_children():
+			#warriors_count+=1				
+			if new_general.position == general.position:
+				column+=1
+			
+			if column==10:
+				column=0
+				row+=1
+			new_general.position=spawn_position.position+Vector2(20*column,20*row)
 		
-func _create_warrior_unit(cost = 0):
-	var new_Unit = Unit2.instance()
-	unit_count+=1
-	new_Unit.position = Vector2(camera.position.x+rand_range(50,100),camera.position.y+rand_range(50,100))
-	if(unit_count%2==0):
-		new_Unit.is_girl=true
-	else:
-		new_Unit.is_girl=false
-	if(Globals.group_dressed):
-		new_Unit.is_dressed=true	
-	if(Globals.group_has_bag):
-		new_Unit.has_bag=true	
-		new_Unit.get_child(3).visible = true
-	Globals.food_points -= cost
-	units.add_child(new_Unit)
-	all_units.append(new_Unit)
+		#Agregamos el guerrero al nodo warriors.
+		generals.add_child(new_general)
+		#Agregamos el guerrero al arreglo all_units.
+		all_units.append(new_general)		
+		#Restamos los puntos del costo del guerrero.
+		Globals.food_points-=50
+		Globals.wood_points-=40
+		Globals.stone_points-=30	
+		
+		
+func _create_warrior_unit():
+	#Creamos un nuevo contador de guerreros.
+	#var warriors_count=0
+	#Si tenemos al menos 30 puntos de comida,
+	#20 de madera y 10 de piedra.
+	if Globals.food_points>=30 && Globals.wood_points>=20 && Globals.stone_points>=10:
+		#Instanciamos el nuevo guerrero.
+		var new_warrior = Warrior.instance()
+		#Situamos el guerrero en la posición spawn_position.
+		new_warrior.position = spawn_position.position
+		#Ordenamos los guerreros en filas de 10 unidades (10 columnas),
+		#en espacios de 20x20.
+		for warrior in warriors.get_children():
+			#warriors_count+=1				
+			if new_warrior.position == warrior.position:
+				column+=1
+			#if new_warrior.position.x>cave.position.x:
+			if column==10:
+				column=0
+				row+=1
+			new_warrior.position=spawn_position.position+Vector2(20*column,20*row)
+		
+		#Agregamos el guerrero al nodo warriors.
+		warriors.add_child(new_warrior)
+		#Agregamos el guerrero al arreglo all_units.
+		all_units.append(new_warrior)		
+		#Restamos los puntos del costo del guerrero.
+		Globals.food_points-=30
+		Globals.wood_points-=20
+		Globals.stone_points-=10
 			
 func _check_victory():
 	if Globals.is_enemy_townhall_down:
@@ -1304,9 +1351,10 @@ func _manage_enemy_units():
 		else:
 			if enemy_fort_node.get_child_count() == 0 && Globals.e_wood_points>=100 && Globals.e_stone_points>=50 && Globals.e_leaves_points>=20:
 				_create_enemy_fort()
-			if Globals.is_enemy_fort_built:
-				var new_enemy_vehicle=EnemyVehicle.instance()
-				new_enemy_vehicle.position=Vector2(enemy_fort_node.get_child(0).position.x,enemy_fort_node.get_child(0).position.y+100)
+				Globals.is_enemy_fort_built=true
+		if Globals.is_enemy_fort_built:
+			var new_enemy_vehicle=EnemyVehicle.instance()
+			new_enemy_vehicle.position=Vector2(enemy_fort_node.get_child(0).position.x,enemy_fort_node.get_child(0).position.y+100)
 						
 
 func _create_enemy_fort():
@@ -1318,41 +1366,15 @@ func _create_enemy_fort():
 	Globals.e_wood_points-=300
 	Globals.e_stone_points-=200
 	Globals.e_leaves_points-=40
+	obstacles.append(new_enemy_fort)
 	_rebake_navigation()
 			
 
 
 #Botón para crear unidades militares guerrero y cazador.
 func _on_CreateWarriorUnit_pressed():
-	#Creamos un nuevo contador de guerreros.
-	#var warriors_count=0
-	#Si tenemos al menos 30 puntos de comida,
-	#20 de madera y 10 de piedra.
-	if Globals.food_points>=30 && Globals.wood_points>=20 && Globals.stone_points>=10:
-		#Instanciamos el nuevo guerrero.
-		var new_warrior = Warrior.instance()
-		#Situamos el guerrero en la posición spawn_position.
-		new_warrior.position = spawn_position.position
-		#Ordenamos los guerreros en filas de 10 unidades (10 columnas),
-		#en espacios de 20x20.
-		for warrior in warriors.get_children():
-			#warriors_count+=1				
-			if new_warrior.position == warrior.position:
-				column+=1
-			#if new_warrior.position.x>cave.position.x:
-			if column==10:
-				column=0
-				row+=1
-			new_warrior.position=spawn_position.position+Vector2(20*column,20*row)
-		
-		#Agregamos el guerrero al nodo warriors.
-		warriors.add_child(new_warrior)
-		#Agregamos el guerrero al arreglo all_units.
-		all_units.append(new_warrior)		
-		#Restamos los puntos del costo del guerrero.
-		Globals.food_points-=30
-		Globals.wood_points-=20
-		Globals.stone_points-=10
+	_create_warrior_unit()
+	
 	
 	
 
@@ -1501,7 +1523,9 @@ func _rebake_navigation():
 			_update_path(enemy_townhall)
 			
 	
-		
+	for an_enemy_fort in enemy_fort_node.get_children():
+		if is_instance_valid(an_enemy_fort):
+			_update_path(an_enemy_fort)	
 	
 	nav2d.get_node("polygon").enabled=true
 	
@@ -1606,7 +1630,8 @@ func _on_all_timer_timeout():
 	#y los enemigos.
 	for a_unit in all_units:
 		#Incrementar contador para activar ciertas propiedades en la unidad.
-		a_unit.timer_count+=1
+		if not "Vehicle" in a_unit.name:
+			a_unit.timer_count+=1
 		if is_instance_valid(a_unit) && "Unit" in a_unit.name || "General" in a_unit.name && !("Enemy" in a_unit.name):
 			if a_unit.pickable!=null:
 				a_unit._collect_pickable(a_unit.pickable)
@@ -1640,3 +1665,7 @@ func _on_all_timer_timeout():
 					if a_unit.can_heal_another:
 						if "Unit" in a_unit.body_entered.name || "Warrior" in a_unit.body_entered.name && !("Enemy" in a_unit.body_entered.name):
 							a_unit.heal(a_unit.body_entered)
+
+
+func _on_CreateGeneral_pressed():
+	_create_general()
