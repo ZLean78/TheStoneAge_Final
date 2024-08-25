@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=2]
+[gd_scene load_steps=38 format=2]
 
 [ext_resource path="res://Scenes/Cave/Cave.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Unit2/Unit2.tscn" type="PackedScene" id=2]
@@ -19,7 +19,9 @@
 [ext_resource path="res://Scenes/Game2/watericon.png" type="Texture" id=17]
 [ext_resource path="res://Scenes/Game2/puddle.png" type="Texture" id=18]
 [ext_resource path="res://Scenes/MouseIcons/house_small.png" type="Texture" id=19]
+[ext_resource path="res://Scenes/Unit/warchief.png" type="Texture" id=20]
 [ext_resource path="res://Scenes/Game2/woodicon.png" type="Texture" id=21]
+[ext_resource path="res://Scenes/Unit/warrior.png" type="Texture" id=22]
 [ext_resource path="res://Scenes/Game2/plant.png" type="Texture" id=23]
 [ext_resource path="res://Scenes/Game2/quarry.png" type="Texture" id=24]
 [ext_resource path="res://Scenes/Game2/food.png" type="Texture" id=25]
@@ -282,9 +284,9 @@ texture = ExtResource( 15 )
 
 [node name="CreateCitizen" type="TextureButton" parent="UI/Base/Rectangle"]
 margin_left = 1062.0
-margin_top = 22.0
+margin_top = 29.0
 margin_right = 1074.0
-margin_bottom = 45.0
+margin_bottom = 52.0
 hint_tooltip = "Crear Ciudadano.
 Costo: 15 ptos.
 de comida."
@@ -389,16 +391,16 @@ text = "0"
 
 [node name="CreateWarriorUnit" type="TextureButton" parent="UI/Base/Rectangle"]
 visible = false
-margin_left = 935.0
-margin_top = 22.0
-margin_right = 948.0
-margin_bottom = 46.0
+margin_left = 933.0
+margin_top = 23.0
+margin_right = 946.0
+margin_bottom = 53.0
 hint_tooltip = "Crear unidad militar
 guerrero y cazador.
 Costo: 30 ptos. alimento,
 20 ptos. madera,
 10 ptos. piedra."
-texture_normal = ExtResource( 13 )
+texture_normal = ExtResource( 22 )
 
 [node name="CreateHouse" type="TextureButton" parent="UI/Base/Rectangle"]
 visible = false
@@ -435,7 +437,7 @@ margin_right = 922.0
 margin_bottom = 44.0
 hint_tooltip = "Convertir unidad en
 jefe guerrero."
-texture_normal = ExtResource( 13 )
+texture_normal = ExtResource( 20 )
 
 [node name="ReplayConfirmation" type="ColorRect" parent="UI/Base/Rectangle"]
 visible = false

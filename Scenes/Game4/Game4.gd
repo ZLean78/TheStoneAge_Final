@@ -199,9 +199,13 @@ var fort_mode=false
 #Si el cursor está en forma de espada tocando un enemigo, lo guardamos en esta variable.
 var touching_enemy
 
-#Variables de fila y columna para formación de unidades (civiles y militares).
+#Variables de fila y columna para crear las unidades militares en formación.
 var row=0
 var column=0
+
+#Variables para crear las unidades civiles en formación.
+var unit_row=0
+var unit_column=0
 
 #Contador para ataque enemigo. Se cambia desde el timer "all_timer".
 #var attack_counter=50
@@ -855,7 +859,12 @@ func _create_unit(cost = 0):
 	#le sumamos a la posición de la unidad un Vector2 de 20x20.
 	for unit in units.get_children():
 		if new_Unit.position==unit.position:
-			new_Unit.position+=Vector2(20,20)	
+			unit_column+=1
+			
+		if unit_column==10:
+			unit_column=0
+			unit_row+=1
+		new_Unit.position=spawn_position.position+Vector2(20*unit_column,20*unit_row)
 	#Agregamos la unidad al nodo units.	
 	units.add_child(new_Unit)
 	#Agregamos la unidad al arreglo all_units.

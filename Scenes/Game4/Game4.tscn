@@ -1,9 +1,10 @@
-[gd_scene load_steps=46 format=2]
+[gd_scene load_steps=47 format=2]
 
 [ext_resource path="res://Scenes/Camera/Camera.gd" type="Script" id=1]
 [ext_resource path="res://Scenes/Copper/CopperSmall.png" type="Texture" id=2]
 [ext_resource path="res://Scenes/Camera/SelectDraw.gd" type="Script" id=3]
 [ext_resource path="res://Scenes/Game2/gray_texture.png" type="Texture" id=4]
+[ext_resource path="res://Scenes/Unit/warrior.png" type="Texture" id=5]
 [ext_resource path="res://Scenes/Game2/male1_d.png" type="Texture" id=6]
 [ext_resource path="res://Scenes/MouseIcons/carpentry_m.png" type="Texture" id=7]
 [ext_resource path="res://Sprites/game/tiles/grass/simple/grass.png" type="Texture" id=8]
@@ -325,10 +326,10 @@ margin_bottom = 100.0
 texture = ExtResource( 4 )
 
 [node name="CreateCitizen" type="TextureButton" parent="UI/Base/Rectangle"]
-margin_left = 1104.0
-margin_top = 19.0
-margin_right = 1116.0
-margin_bottom = 42.0
+margin_left = 1105.0
+margin_top = 26.0
+margin_right = 1117.0
+margin_bottom = 49.0
 hint_tooltip = "Crear Ciudadano.
 Costo: 15 ptos.
 de comida."
@@ -344,7 +345,7 @@ guerrero y cazador.
 Costo: 30 ptos. alimento,
 20 ptos. madera,
 10 ptos. piedra."
-texture_normal = ExtResource( 6 )
+texture_normal = ExtResource( 5 )
 
 [node name="PromptsLabel" type="Label" parent="UI/Base/Rectangle"]
 margin_left = 220.0

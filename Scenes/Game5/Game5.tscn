@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=2]
+[gd_scene load_steps=52 format=2]
 
 [ext_resource path="res://Scenes/Unit2/Unit2.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Fort/Fort.tscn" type="PackedScene" id=2]
@@ -41,6 +41,8 @@
 [ext_resource path="res://Scenes/EnemyHouse/EnemyHouse.tscn" type="PackedScene" id=39]
 [ext_resource path="res://Scenes/EnemyTownhall/EnemyTownhall.tscn" type="PackedScene" id=40]
 [ext_resource path="res://Scenes/General/General.tscn" type="PackedScene" id=41]
+[ext_resource path="res://Scenes/Unit/warrior.png" type="Texture" id=42]
+[ext_resource path="res://Scenes/Unit/general.png" type="Texture" id=43]
 
 [sub_resource type="TileSet" id=1]
 0/name = "grass.png 0"
@@ -456,16 +458,23 @@ de comida."
 texture_normal = ExtResource( 20 )
 
 [node name="CreateWarriorUnit" type="TextureButton" parent="UI/Base/Rectangle"]
-margin_left = 1082.0
-margin_top = 19.0
-margin_right = 1095.0
-margin_bottom = 43.0
+margin_left = 1083.0
+margin_top = 11.0
+margin_right = 1096.0
+margin_bottom = 41.0
 hint_tooltip = "Crear unidad militar
 guerrero y cazador.
 Costo: 30 ptos. alimento,
 20 ptos. madera,
 10 ptos. piedra."
-texture_normal = ExtResource( 20 )
+texture_normal = ExtResource( 42 )
+
+[node name="CreateGeneral" type="TextureButton" parent="UI/Base/Rectangle"]
+margin_left = 1083.0
+margin_top = 55.0
+margin_right = 1095.0
+margin_bottom = 87.0
+texture_normal = ExtResource( 43 )
 
 [node name="PromptsLabel" type="Label" parent="UI/Base/Rectangle"]
 margin_left = 220.0
@@ -659,6 +668,7 @@ margin_bottom = 44.0
 text = "Opciones"
 
 [node name="Back" type="Button" parent="UI/Base/Rectangle/OptionsMenu"]
+visible = false
 margin_left = 10.0
 margin_top = 49.0
 margin_right = 83.0
