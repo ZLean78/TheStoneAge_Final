@@ -56,7 +56,7 @@ func _ready():
 	nav2d=tree.get_node("nav")
 	connect("was_selected",tree,"_select_unit",[self])
 	connect("was_deselected",tree,"_deselect_unit",[self])
-	target_position=tree.get_node("townhall").position
+	target_position=tree.get_node("townhall").get_child(0).position
 	
 
 func _physics_process(delta):

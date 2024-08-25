@@ -1355,6 +1355,7 @@ func _manage_enemy_units():
 		if Globals.is_enemy_fort_built:
 			var new_enemy_vehicle=EnemyVehicle.instance()
 			new_enemy_vehicle.position=Vector2(enemy_fort_node.get_child(0).position.x,enemy_fort_node.get_child(0).position.y+100)
+			enemy_vehicles.add_child(new_enemy_vehicle)
 						
 
 func _create_enemy_fort():
